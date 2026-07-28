@@ -18,12 +18,47 @@ this.mentor_rookie_rookie_effect <- this.inherit("scripts/skills/skill", {
 	{
 		local actor = this.getContainer().getActor();
 		local battles = actor != null && actor.getFlags().has("MentorRookieBattlesTogether") ? actor.getFlags().get("MentorRookieBattlesTogether") : 0;
+		local mentor = null;
+		local bonusPercent = 0;
+		local graduationBattles = 50;
+		local graduationLevel = 10;
+
+		if (actor != null && "MentorRookie" in getroottable() && "Service" in ::MentorRookie)
+		{
+			bonusPercent = ::MentorRookie.Service.getBonusPercentForLevel(actor.getLevel());
+			graduationBattles = ::MentorRookie.Service.getSetting("GraduationBattleCount");
+			graduationLevel = ::MentorRookie.Service.getSetting("GraduationLevel");
+
+			if (actor.getFlags().has("MentorRookiePartnerID"))
+			{
+				mentor = ::MentorRookie.Helpers.getActorByID(actor.getFlags().get("MentorRookiePartnerID"));
+			}
+		}
+
 		local ret = this.skill.getTooltip();
 		ret.push({
 			id = 10,
 			type = "text",
+			icon = "ui/icons/special.png",
+			text = "Mentor: [color=" + this.Const.UI.Color.PositiveValue + "]" + (mentor != null ? mentor.getName() : "Unknown") + "[/color]"
+		});
+		ret.push({
+			id = 11,
+			type = "text",
+			icon = "ui/icons/xp_received.png",
+			text = "Current mentor XP bonus: [color=" + this.Const.UI.Color.PositiveValue + "]+" + bonusPercent + "%[/color]"
+		});
+		ret.push({
+			id = 12,
+			type = "text",
 			icon = "ui/icons/xp_received.png",
 			text = "Battles fought with mentor: [color=" + this.Const.UI.Color.PositiveValue + "]" + battles + "[/color]"
+		});
+		ret.push({
+			id = 13,
+			type = "text",
+			icon = "ui/icons/asset_brothers.png",
+			text = "Graduation check: [color=" + this.Const.UI.Color.PositiveValue + "]" + graduationBattles + "[/color] battles and level [color=" + this.Const.UI.Color.PositiveValue + "]" + graduationLevel + "[/color], or earlier if this rookie reaches the mentor's level"
 		});
 		return ret;
 	}
