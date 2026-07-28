@@ -6,5 +6,8 @@ Assign one higher-level brother as a mentor to one lower-level rookie. When both
 
 Default keybind: `Shift+M`.
 
-This mod uses MSU settings and Modern Hooks. Build with `modbb`.
+## Known Issues
 
+- The Mentor Rookie screen may not show every character at once while browsing the mentor and rookie lists. Scroll up or down in the list to find the character you want.
+
+This mod uses MSU settings and Modern Hooks. Build with `modbb`.
