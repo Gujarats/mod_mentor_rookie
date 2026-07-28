@@ -1,0 +1,122 @@
+.mentor-rookie-screen
+{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.55);
+	z-index: 20;
+}
+
+.mentor-rookie-panel
+{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 78.0rem;
+	height: 58.0rem;
+	margin-left: -39.0rem;
+	margin-top: -29.0rem;
+	padding: 2.0rem;
+	background-image: url("coui://gfx/ui/skin/dialog_background_01.png");
+	background-size: 100% 100%;
+}
+
+.mentor-rookie-header
+{
+	position: absolute;
+	left: 2.0rem;
+	right: 2.0rem;
+	top: 1.4rem;
+	height: 4.0rem;
+	text-align: center;
+}
+
+.mentor-rookie-body
+{
+	position: absolute;
+	left: 4.0rem;
+	right: 4.0rem;
+	top: 6.0rem;
+	bottom: 3.0rem;
+}
+
+.mentor-rookie-controls
+{
+	display: grid;
+	grid-template-columns: 7.0rem 1fr 7.0rem 1fr 10.0rem 8.0rem;
+	gap: 0.8rem;
+	align-items: center;
+	margin-bottom: 1.0rem;
+}
+
+.mentor-rookie-select
+{
+	height: 2.8rem;
+	padding-left: 0.6rem;
+	color: #1f160d;
+	background-color: #d5c09b;
+	border: 0.1rem solid #5a3b20;
+}
+
+.mentor-rookie-button,
+.mentor-rookie-small-button
+{
+	height: 2.8rem;
+	color: #f0d7a0;
+	border: none;
+	background-color: transparent;
+	background-image: url("coui://gfx/ui/skin/button_01_default.png");
+	background-size: 100% 100%;
+	cursor: pointer;
+	text-align: center;
+}
+
+.mentor-rookie-button:hover,
+.mentor-rookie-small-button:hover
+{
+	background-image: url("coui://gfx/ui/skin/button_01_hovered.png");
+}
+
+.mentor-rookie-button:active,
+.mentor-rookie-small-button:active
+{
+	background-image: url("coui://gfx/ui/skin/button_01_pressed.png");
+}
+
+.mentor-rookie-message
+{
+	min-height: 2.6rem;
+	margin-bottom: 1.0rem;
+}
+
+.mentor-rookie-section-title
+{
+	margin-top: 0.8rem;
+	margin-bottom: 0.5rem;
+}
+
+.mentor-rookie-list
+{
+	max-height: 16.0rem;
+	overflow-y: auto;
+	border: 0.1rem solid rgba(70, 47, 28, 0.75);
+	background: rgba(15, 10, 6, 0.35);
+	padding: 0.5rem;
+}
+
+.mentor-rookie-row
+{
+	display: grid;
+	grid-template-columns: 1fr 12.0rem;
+	gap: 0.8rem;
+	min-height: 2.6rem;
+	align-items: center;
+	border-bottom: 0.1rem solid rgba(120, 90, 55, 0.35);
+}
+
+.mentor-rookie-empty
+{
+	padding: 0.8rem;
+}

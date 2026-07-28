@@ -1,0 +1,9 @@
+{
+	"id": "mod_mentor_rookie",
+	"name": "Mentor Rookie",
+	"version": "0.0.1",
+	"description": "Assign one veteran as mentor to one rookie. Rookies gain bonus XP after battles fought together.",
+	"dependencies": [
+		"mod_msu"
+	]
+}

@@ -30,6 +30,8 @@
 - Immediate graduation happens if the rookie reaches or passes the mentor's level.
 - Normal graduation happens after the graduation check begins and the rookie reaches the configured graduation level, default `10`.
 - Bonus XP is calculated from the rookie's own vanilla battle XP gained, not from mentor XP, to keep the system bounded and easy to reason about.
+- Default assignment keybind is `Shift+M`.
+- Training Hall and Drill Sergeant compatibility is preserved by calculating mentor bonus from the rookie's already-final vanilla battle XP, then applying adjusted bonus XP with `addXP(inputBonus, false)`.
 
 ---
 
@@ -171,7 +173,7 @@ Create:
 {
   "name": "Mentor Rookie",
   "description": "One veteran brother can mentor one lower-level brother through battle-based XP catch-up.",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "author": "Gujarat Santana",
   "mod_id": "mod_mentor_rookie"
 }
@@ -207,6 +209,10 @@ Debug logging is enabled by default in the first version. Check `C:\Users\gujar\
 ## Manual Testing
 
 Use the world keybind to open the mentor assignment screen. Assign a level 6+ mentor to a lower-level rookie, fight battles with both in the active formation, and confirm battle count, bonus XP, and graduation behavior in the log.
+
+Default keybind: `Shift+M`.
+
+Training Hall and Drill Sergeant compatibility: Mentor Rookie calculates bonus XP from the rookie's already-final vanilla battle XP gained, then applies an adjusted `addXP(inputBonus, false)` call. Vanilla still applies `XPGainMult` inside `addXP(..., false)`, so the input must be compensated and the actual XP awarded must be logged.
 ```
 
 - [ ] **Step 5: Create globals/config**
@@ -221,7 +227,7 @@ if (!("MentorRookie" in getroottable()))
 
 ::MentorRookie.ID <- "mod_mentor_rookie";
 ::MentorRookie.Name <- "Mentor Rookie";
-::MentorRookie.Version <- "0.1.0";
+::MentorRookie.Version <- "0.0.1";
 
 ::MentorRookie.getSetting <- function( _key )
 {
@@ -256,7 +262,7 @@ if (!("MentorRookie" in getroottable()))
 
 ::MentorRookie.ID <- "mod_mentor_rookie";
 ::MentorRookie.Name <- "Mentor Rookie";
-::MentorRookie.Version <- "0.1.0";
+::MentorRookie.Version <- "0.0.1";
 ::MentorRookie.HooksMod <- ::Hooks.register(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 ::MentorRookie.HooksMod.require("mod_msu >= 1.9.0");
 
@@ -943,6 +949,7 @@ Expected: PASS.
 - Produces: `MentorRookieScreen`
 - Produces: `Service.queryAssignmentData() -> table`
 - Produces: `Service.assignFromUI(_mentorID, _rookieID) -> table`
+- Produces default keybind: `Shift+M`
 
 - [ ] **Step 1: Extend validator for UI**
 
@@ -1108,10 +1115,20 @@ Use `mod_bro_editor/scripts/!mods_preload/mod_breditor.nut` as the reference. Ad
 
 ```squirrel
 // Use the same world screen visibility guards as mod_bro_editor where possible.
-// Default key should be documented in README after the final keybinding mechanism is confirmed.
+// Default keybind is Shift+M.
 ```
 
-Runtime keybinding APIs vary by MSU/keybind setup; if this repo already exposes an MSU keybind helper during implementation, use it. If not, hook the same vanilla key event route used by `mod_bro_editor` and document the exact key.
+Runtime keybinding APIs vary by MSU/keybind setup; if this repo already exposes an MSU keybind helper during implementation, use it and make `Shift+M` the default. If not, hook the same vanilla key event route used by `mod_bro_editor` and document `Shift+M` as the exact key.
+
+The keybind must log:
+
+```text
+[MentorRookie] keybind pressed
+[MentorRookie] screen opened
+[MentorRookie] screen open blocked reason=<reason>
+```
+
+The keybind must do nothing while town screens, event screens, character screens, combat, or other blocking UI are open.
 
 - [ ] **Step 6: Create JS/CSS**
 
@@ -1320,6 +1337,10 @@ Create:
 | Normal graduation | 50+ valid battles and rookie reaches level 10 | Relationship graduates/removes |
 | Save/load | Save with relationship, reload | Relationship persists and effects are restored |
 | Death/removal | Mentor or rookie dies/leaves | Relationship is removed with debug reason |
+| Training Hall compatibility | Rookie has training XP modifier and fights with mentor | Mentor bonus is based on final rookie battle XP and is not double-scaled |
+| Drill Sergeant compatibility | Company has Drill Sergeant and rookie fights with mentor | Mentor bonus is based on final rookie battle XP and is not double-scaled |
+| Keybind blocked | Press Shift+M during blocking UI | Screen does not open; debug log records blocked reason |
+| Keybind open | Press Shift+M on world map with no blocking UI | Mentor assignment screen opens |
 ```
 
 - [ ] **Step 2: Extend validator for documentation**
@@ -1349,6 +1370,7 @@ Update README to include:
 - `Level7To10XPBonusPercent`: default 12.
 - `BattlesBeforeGraduationCheck`: default 50.
 - `GraduationRookieLevel`: default 10.
+- Default keybind: `Shift+M`.
 
 ## XP Formula
 
@@ -1356,7 +1378,9 @@ Bonus XP is calculated from the rookie's vanilla battle XP gained:
 
 `bonusXP = floor(rookieBattleXP * configuredPercent / 100)`
 
-The bonus is applied with `addXP(bonusXP, false)` so it is not scaled twice by vanilla difficulty/global XP multipliers.
+The bonus is applied with adjusted `addXP(inputBonus, false)`. This avoids difficulty/global XP multipliers and compensates for vanilla still applying `XPGainMult` inside `addXP(..., false)`.
+
+This is compatible with Training Hall and Drill Sergeant. Those systems can increase the rookie's vanilla battle XP first, and Mentor Rookie calculates its bonus from that final amount.
 ```
 
 - [ ] **Step 4: Run static validator**

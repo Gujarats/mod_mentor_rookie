@@ -21,6 +21,9 @@ Create a mentoring system where one experienced brother can mentor one lower-lev
 ## Assignment UI
 
 - Add a world-screen keybind to open the mentor assignment menu.
+- Default keybind is `Shift+M`.
+- The keybind should do nothing while town screens, event screens, character screens, combat, or other blocking UI are open.
+- If MSU keybind support is available, the keybind should be configurable.
 - The menu should show eligible mentors in the first column.
 - Eligible mentors are brothers at or above the configured minimum mentor level.
 - After selecting a mentor, the second column should show eligible rookies.
@@ -52,8 +55,9 @@ Create a mentoring system where one experienced brother can mentor one lower-lev
 - All experience percentages must be configurable through options.
 - Maximum rookie level for mentoring must be configurable through options.
 - Default maximum rookie level is `10`.
-- The bonus should be calculated from the mentor's battle XP contribution or from the rookie's earned battle XP, depending on which approach is safer after implementation research.
-- The chosen calculation method must be documented before implementation.
+- Bonus XP is calculated from the rookie's already-final vanilla battle XP gained.
+- The bonus XP is applied with compensated `addXP(inputBonus, false)`. Vanilla still applies `XPGainMult` inside `addXP(..., false)`, so the implementation adjusts the input bonus and logs the actual XP awarded.
+- This means Training Hall and Drill Sergeant remain compatible: they can increase the rookie's vanilla XP first, and Mentor Rookie then calculates its bonus from that final amount.
 
 ## Master Mentor Perk
 
@@ -113,6 +117,9 @@ Create a mentoring system where one experienced brother can mentor one lower-lev
 
 - Add debug logging behind a configurable option.
 - Debug logs should record:
+  - keybind pressed,
+  - screen opened,
+  - screen open blocked and reason,
   - mentor relationship created,
   - mentor relationship removed,
   - reason relationship was removed,
