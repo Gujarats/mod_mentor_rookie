@@ -5,7 +5,7 @@
 	top: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.55);
+	background-color: rgba(0, 0, 0, 0.65);
 	z-index: 20;
 }
 
@@ -14,10 +14,10 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	width: 78.0rem;
-	height: 58.0rem;
-	margin-left: -39.0rem;
-	margin-top: -29.0rem;
+	width: 86.0rem;
+	height: 62.0rem;
+	margin-left: -43.0rem;
+	margin-top: -31.0rem;
 	padding: 2.0rem;
 	background-image: url("coui://gfx/ui/skin/dialog_background_01.png");
 	background-size: 100% 100%;
@@ -25,12 +25,14 @@
 
 .mentor-rookie-header
 {
-	position: absolute;
-	left: 2.0rem;
-	right: 2.0rem;
-	top: 1.4rem;
-	height: 4.0rem;
-	text-align: center;
+	width: 100%;
+	height: 5.0rem;
+}
+
+.mentor-rookie-header .title
+{
+	line-height: 4.0rem;
+	text-align: left;
 }
 
 .mentor-rookie-body
@@ -38,32 +40,215 @@
 	position: absolute;
 	left: 4.0rem;
 	right: 4.0rem;
-	top: 6.0rem;
+	top: 7.0rem;
 	bottom: 3.0rem;
 }
 
-.mentor-rookie-controls
+.mentor-rookie-columns
 {
-	display: grid;
-	grid-template-columns: 7.0rem 1fr 7.0rem 1fr 10.0rem 8.0rem;
-	gap: 0.8rem;
-	align-items: center;
-	margin-bottom: 1.0rem;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 31.0rem;
 }
 
-.mentor-rookie-select
+.mentor-rookie-column
+{
+	position: absolute;
+	top: 0;
+	width: 38.0rem;
+	height: 100%;
+}
+
+.mentor-rookie-column.is-left
+{
+	left: 0;
+}
+
+.mentor-rookie-column.is-right
+{
+	right: 0;
+}
+
+.mentor-rookie-section-title
 {
 	height: 2.8rem;
-	padding-left: 0.6rem;
-	color: #1f160d;
-	background-color: #d5c09b;
-	border: 0.1rem solid #5a3b20;
+	line-height: 2.8rem;
+}
+
+.mentor-rookie-relationships-title
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 33.4rem;
+}
+
+.mentor-rookie-list
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 3.0rem;
+	bottom: 0;
+	overflow-y: auto;
+	padding-right: 0.4rem;
+}
+
+.mentor-rookie-bro-row
+{
+	position: relative;
+	width: 100%;
+	height: 8.0rem;
+	margin-bottom: 0.4rem;
+	background-image: url("coui://gfx/ui/skin/list_item_03.png");
+	background-size: 100% 100%;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.mentor-rookie-bro-row:hover
+{
+	background-image: url("coui://gfx/ui/skin/list_item_03_hovered.png");
+}
+
+.mentor-rookie-bro-row.is-selected
+{
+	box-shadow: inset 0 0 0 0.2rem #d49a32;
+}
+
+.mentor-rookie-bro-row.is-locked
+{
+	opacity: 0.7;
+}
+
+.mentor-rookie-portrait
+{
+	position: absolute;
+	left: 0.6rem;
+	top: 0.6rem;
+	width: 7.0rem;
+	height: 6.8rem;
+	overflow: hidden;
+}
+
+.mentor-rookie-portrait > img
+{
+	position: absolute;
+	display: block;
+}
+
+.mentor-rookie-bro-content
+{
+	position: absolute;
+	left: 8.4rem;
+	right: 1.0rem;
+	top: 0.8rem;
+	bottom: 0.8rem;
+}
+
+.mentor-rookie-bro-name
+{
+	height: 2.6rem;
+	line-height: 2.6rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mentor-rookie-bro-details
+{
+	height: 2.0rem;
+	line-height: 2.0rem;
+	color: #d0b47c;
+}
+
+.mentor-rookie-bro-status
+{
+	height: 2.0rem;
+	line-height: 2.0rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mentor-rookie-bro-status.is-available
+{
+	color: #6bd26b;
+}
+
+.mentor-rookie-bro-status.is-warning
+{
+	color: #d27a5c;
+}
+
+.mentor-rookie-relationships
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 36.5rem;
+	height: 6.6rem;
+	overflow-y: auto;
+	background: rgba(15, 10, 6, 0.45);
+	border: 0.1rem solid rgba(70, 47, 28, 0.75);
+	padding: 0.5rem;
+}
+
+.mentor-rookie-relationship-row
+{
+	position: relative;
+	min-height: 2.8rem;
+	margin-bottom: 0.4rem;
+}
+
+.mentor-rookie-relationship-text
+{
+	position: absolute;
+	left: 0.6rem;
+	right: 11.0rem;
+	top: 0;
+	height: 2.8rem;
+	line-height: 2.8rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mentor-rookie-relationship-row .mentor-rookie-small-button
+{
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 10.0rem;
+	height: 2.8rem;
+}
+
+.mentor-rookie-message
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 43.4rem;
+	height: 3.0rem;
+	line-height: 3.0rem;
+	text-align: center;
+}
+
+.mentor-rookie-actions
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 3.4rem;
 }
 
 .mentor-rookie-button,
 .mentor-rookie-small-button
 {
-	height: 2.8rem;
+	height: 3.0rem;
 	color: #f0d7a0;
 	border: none;
 	background-color: transparent;
@@ -71,6 +256,24 @@
 	background-size: 100% 100%;
 	cursor: pointer;
 	text-align: center;
+}
+
+.mentor-rookie-actions .mentor-rookie-button
+{
+	position: absolute;
+	top: 0;
+	width: 37.8rem;
+	height: 3.2rem;
+}
+
+.mentor-rookie-actions .mentor-rookie-button:first-child
+{
+	left: 0;
+}
+
+.mentor-rookie-actions .mentor-rookie-button:last-child
+{
+	right: 0;
 }
 
 .mentor-rookie-button:hover,
@@ -83,37 +286,6 @@
 .mentor-rookie-small-button:active
 {
 	background-image: url("coui://gfx/ui/skin/button_01_pressed.png");
-}
-
-.mentor-rookie-message
-{
-	min-height: 2.6rem;
-	margin-bottom: 1.0rem;
-}
-
-.mentor-rookie-section-title
-{
-	margin-top: 0.8rem;
-	margin-bottom: 0.5rem;
-}
-
-.mentor-rookie-list
-{
-	max-height: 16.0rem;
-	overflow-y: auto;
-	border: 0.1rem solid rgba(70, 47, 28, 0.75);
-	background: rgba(15, 10, 6, 0.35);
-	padding: 0.5rem;
-}
-
-.mentor-rookie-row
-{
-	display: grid;
-	grid-template-columns: 1fr 12.0rem;
-	gap: 0.8rem;
-	min-height: 2.6rem;
-	align-items: center;
-	border-bottom: 0.1rem solid rgba(120, 90, 55, 0.35);
 }
 
 .mentor-rookie-empty
