@@ -3,7 +3,9 @@ var MentorRookieScreen = function()
 	this.mSQHandle = null;
 	this.mContainer = null;
 	this.mMentorList = null;
+	this.mMentorListScrollContainer = null;
 	this.mRookieList = null;
+	this.mRookieListScrollContainer = null;
 	this.mRelationships = null;
 	this.mMessage = null;
 	this.mData = null;
@@ -41,18 +43,18 @@ MentorRookieScreen.prototype.createDIV = function()
 
 	header.append($('<div class="title title-font-big font-color-title">Mentor Rookie</div>'));
 
-	this.mMentorList = $('<div class="mentor-rookie-list"/>');
-	this.mRookieList = $('<div class="mentor-rookie-list"/>');
+	var mentorListLayout = $('<div class="mentor-rookie-list-layout"/>');
+	var rookieListLayout = $('<div class="mentor-rookie-list-layout"/>');
 	this.mRelationships = $('<div class="mentor-rookie-relationships"/>');
 	this.mMessage = $('<div class="mentor-rookie-message description-font-medium font-color-description">Select one mentor and one rookie.</div>');
 
 	var mentorColumn = $('<div class="mentor-rookie-column is-left"/>');
 	mentorColumn.append($('<div class="mentor-rookie-section-title title-font-normal font-color-title">Mentors</div>'));
-	mentorColumn.append(this.mMentorList);
+	mentorColumn.append(mentorListLayout);
 
 	var rookieColumn = $('<div class="mentor-rookie-column is-right"/>');
 	rookieColumn.append($('<div class="mentor-rookie-section-title title-font-normal font-color-title">Rookies</div>'));
-	rookieColumn.append(this.mRookieList);
+	rookieColumn.append(rookieListLayout);
 
 	var createButton = $('<button class="mentor-rookie-button text-font-normal">Create Pair</button>');
 	var closeButton = $('<button class="mentor-rookie-button text-font-normal">Close</button>');
@@ -82,12 +84,33 @@ MentorRookieScreen.prototype.createDIV = function()
 	panel.append(body);
 	this.mContainer.append(panel);
 	$('body').append(this.mContainer);
+
+	this.mMentorList = mentorListLayout.createList(6.7, 'mentor-rookie-list', true);
+	this.mMentorListScrollContainer = this.mMentorList.findListScrollContainer();
+	this.mRookieList = rookieListLayout.createList(6.7, 'mentor-rookie-list', true);
+	this.mRookieListScrollContainer = this.mRookieList.findListScrollContainer();
 };
 
 MentorRookieScreen.prototype.destroyDIV = function()
 {
 	if (this.mContainer !== null)
 	{
+		if (this.mMentorList !== null)
+		{
+			this.mMentorListScrollContainer.empty();
+			this.mMentorListScrollContainer = null;
+			this.mMentorList.destroyList();
+			this.mMentorList = null;
+		}
+
+		if (this.mRookieList !== null)
+		{
+			this.mRookieListScrollContainer.empty();
+			this.mRookieListScrollContainer = null;
+			this.mRookieList.destroyList();
+			this.mRookieList = null;
+		}
+
 		this.mContainer.remove();
 		this.mContainer = null;
 	}
@@ -141,15 +164,15 @@ MentorRookieScreen.prototype.render = function()
 {
 	var self = this;
 	var data = this.mData || { Roster: [], Relationships: [] };
-	this.mMentorList.empty();
-	this.mRookieList.empty();
+	this.mMentorListScrollContainer.empty();
+	this.mRookieListScrollContainer.empty();
 	this.mRelationships.empty();
 
 	for (var i = 0; i < data.Roster.length; i++)
 	{
 		var bro = data.Roster[i];
-		this.mMentorList.append(this.createBrotherRow(bro, 'mentor'));
-		this.mRookieList.append(this.createBrotherRow(bro, 'rookie'));
+		this.mMentorListScrollContainer.append(this.createBrotherRow(bro, 'mentor'));
+		this.mRookieListScrollContainer.append(this.createBrotherRow(bro, 'rookie'));
 	}
 
 	if (data.Relationships.length === 0)
@@ -181,6 +204,7 @@ MentorRookieScreen.prototype.createBrotherRow = function(_bro, _role)
 	var isSelected = _role === 'mentor' ? this.mSelectedMentorID === _bro.ID : this.mSelectedRookieID === _bro.ID;
 	var isLocked = _role === 'mentor' ? _bro.IsMentor || _bro.IsRookie : _bro.IsRookie || _bro.IsMentor;
 	var row = $('<div class="mentor-rookie-bro-row"/>');
+	var entry = $('<div class="mentor-rookie-bro-entry"/>');
 	var portrait = $('<div class="mentor-rookie-portrait"/>');
 	var content = $('<div class="mentor-rookie-bro-content"/>');
 	var name = $('<div class="mentor-rookie-bro-name title-font-normal font-color-title"/>').text(_bro.Name);
@@ -216,16 +240,16 @@ MentorRookieScreen.prototype.createBrotherRow = function(_bro, _role)
 
 	if (isSelected)
 	{
-		row.addClass('is-selected');
+		entry.addClass('is-selected');
 	}
 
 	if (isLocked)
 	{
-		row.addClass('is-locked');
+		entry.addClass('is-locked');
 	}
 
-	row.data('bro-id', _bro.ID);
-	row.click(function()
+	entry.data('bro-id', _bro.ID);
+	entry.click(function()
 	{
 		if (_role === 'mentor')
 		{
@@ -242,8 +266,9 @@ MentorRookieScreen.prototype.createBrotherRow = function(_bro, _role)
 	content.append(name);
 	content.append(details);
 	content.append(status);
-	row.append(portrait);
-	row.append(content);
+	entry.append(portrait);
+	entry.append(content);
+	row.append(entry);
 	return row;
 };
 

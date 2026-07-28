@@ -15,9 +15,9 @@
 	left: 50%;
 	top: 50%;
 	width: 86.0rem;
-	height: 62.0rem;
+	height: 65.8rem;
 	margin-left: -43.0rem;
-	margin-top: -31.0rem;
+	margin-top: -32.9rem;
 	padding: 2.0rem;
 	background-image: url("coui://gfx/ui/skin/dialog_background_01.png");
 	background-size: 100% 100%;
@@ -50,7 +50,7 @@
 	left: 0;
 	right: 0;
 	top: 0;
-	height: 31.0rem;
+	height: 34.8rem;
 }
 
 .mentor-rookie-column
@@ -82,17 +82,26 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: 33.4rem;
+	top: 37.2rem;
 }
 
-.mentor-rookie-list
+.mentor-rookie-list-layout
 {
 	position: absolute;
 	left: 0;
 	right: 0;
 	top: 3.0rem;
 	bottom: 0;
-	overflow-y: auto;
+}
+
+.mentor-rookie-list
+{
+	overflow: hidden;
+}
+
+.mentor-rookie-list .scroll-container
+{
+	width: 100%;
 	padding-right: 0.4rem;
 }
 
@@ -100,25 +109,34 @@
 {
 	position: relative;
 	width: 100%;
-	height: 8.0rem;
-	margin-bottom: 0.4rem;
+	height: 6.4rem;
+	margin-bottom: 0.3rem;
+}
+
+.mentor-rookie-bro-entry
+{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 	background-image: url("coui://gfx/ui/skin/list_item_03.png");
 	background-size: 100% 100%;
 	cursor: pointer;
 	overflow: hidden;
 }
 
-.mentor-rookie-bro-row:hover
+.mentor-rookie-bro-entry:hover
 {
 	background-image: url("coui://gfx/ui/skin/list_item_03_hovered.png");
 }
 
-.mentor-rookie-bro-row.is-selected
+.mentor-rookie-bro-entry.is-selected
 {
 	box-shadow: inset 0 0 0 0.2rem #d49a32;
 }
 
-.mentor-rookie-bro-row.is-locked
+.mentor-rookie-bro-entry.is-locked
 {
 	opacity: 0.7;
 }
@@ -126,10 +144,10 @@
 .mentor-rookie-portrait
 {
 	position: absolute;
-	left: 0.6rem;
-	top: 0.6rem;
-	width: 7.0rem;
-	height: 6.8rem;
+	left: 0.5rem;
+	top: 0.4rem;
+	width: 5.8rem;
+	height: 5.6rem;
 	overflow: hidden;
 }
 
@@ -142,16 +160,16 @@
 .mentor-rookie-bro-content
 {
 	position: absolute;
-	left: 8.4rem;
-	right: 1.0rem;
-	top: 0.8rem;
-	bottom: 0.8rem;
+	left: 7.0rem;
+	right: 0.8rem;
+	top: 0.5rem;
+	bottom: 0.5rem;
 }
 
 .mentor-rookie-bro-name
 {
-	height: 2.6rem;
-	line-height: 2.6rem;
+	height: 2.1rem;
+	line-height: 2.1rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -159,15 +177,15 @@
 
 .mentor-rookie-bro-details
 {
-	height: 2.0rem;
-	line-height: 2.0rem;
+	height: 1.7rem;
+	line-height: 1.7rem;
 	color: #d0b47c;
 }
 
 .mentor-rookie-bro-status
 {
-	height: 2.0rem;
-	line-height: 2.0rem;
+	height: 1.7rem;
+	line-height: 1.7rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -188,7 +206,7 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: 36.5rem;
+	top: 40.3rem;
 	height: 6.6rem;
 	overflow-y: auto;
 	background: rgba(15, 10, 6, 0.45);
@@ -230,7 +248,7 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: 43.4rem;
+	top: 47.2rem;
 	height: 3.0rem;
 	line-height: 3.0rem;
 	text-align: center;
