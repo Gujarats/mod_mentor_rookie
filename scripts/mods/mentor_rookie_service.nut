@@ -290,7 +290,11 @@ if (!("MentorRookie" in getroottable()))
 	{
 		local percent = this.getBonusPercentForLevel(_rookie.getLevel());
 		local desiredBonus = ::Math.floor(_baseXP * percent / 100.0);
-		if (desiredBonus <= 0) return 0;
+		if (desiredBonus <= 0)
+		{
+			::MentorRookie.Helpers.debugLog("mentor XP skipped rookie=" + _rookie.getName() + " baseXP=" + _baseXP + " percent=" + percent + " reason=no_desired_bonus");
+			return 0;
+		}
 
 		local mult = _rookie.m.CurrentProperties.XPGainMult;
 		if (mult <= 0.0) mult = 1.0;
@@ -310,23 +314,42 @@ if (!("MentorRookie" in getroottable()))
 	{
 		this.rebuildRelationshipsFromRoster();
 		local relationships = clone this.Relationships;
+		::MentorRookie.Helpers.debugLog("after combat processing relationships=" + relationships.len() + " participants=" + this.LastBattleParticipants.len());
 
 		foreach (rel in relationships)
 		{
 			local mentor = ::MentorRookie.Helpers.getActorByID(rel.MentorID);
 			local rookie = ::MentorRookie.Helpers.getActorByID(rel.RookieID);
-			if (mentor == null || rookie == null) continue;
-
-			if (!this.wasBattleParticipant(mentor.getID()) || !this.wasBattleParticipant(rookie.getID()))
+			if (mentor == null || rookie == null)
 			{
-				::MentorRookie.Helpers.debugLog("battle ignored mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " reason=missing_or_dead_participant");
+				::MentorRookie.Helpers.debugLog("battle ignored mentorID=" + rel.MentorID + " rookieID=" + rel.RookieID + " reason=missing_actor mentorFound=" + (mentor != null ? "true" : "false") + " rookieFound=" + (rookie != null ? "true" : "false"));
+				continue;
+			}
+
+			local mentorParticipated = this.wasBattleParticipant(mentor.getID());
+			local rookieParticipated = this.wasBattleParticipant(rookie.getID());
+			local mentorKey = "" + mentor.getID();
+			local rookieKey = "" + rookie.getID();
+			local mentorCaptured = mentorKey in this.LastBattleParticipants;
+			local rookieCaptured = rookieKey in this.LastBattleParticipants;
+			local mentorAlive = mentorCaptured ? this.LastBattleParticipants[mentorKey].Alive : false;
+			local rookieAlive = rookieCaptured ? this.LastBattleParticipants[rookieKey].Alive : false;
+			local previousBattles = rel.BattlesTogether;
+
+			::MentorRookie.Helpers.debugLog("battle relationship checked mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " previousBattles=" + previousBattles + " mentorCaptured=" + (mentorCaptured ? "true" : "false") + " mentorAlive=" + (mentorAlive ? "true" : "false") + " rookieCaptured=" + (rookieCaptured ? "true" : "false") + " rookieAlive=" + (rookieAlive ? "true" : "false"));
+
+			if (!mentorParticipated || !rookieParticipated)
+			{
+				::MentorRookie.Helpers.debugLog("battle ignored mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " reason=missing_or_dead_participant mentorParticipated=" + (mentorParticipated ? "true" : "false") + " rookieParticipated=" + (rookieParticipated ? "true" : "false"));
 				continue;
 			}
 
 			rel.BattlesTogether++;
 			this.writeRelationshipFlags(mentor, rookie, rel.BattlesTogether);
 			local baseXP = this.getCapturedBattleXP(rookie.getID());
-			this.awardMentorBonusXP(rookie, baseXP);
+			::MentorRookie.Helpers.debugLog("valid battle counted mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " battles=" + rel.BattlesTogether + " previousBattles=" + previousBattles + " rookieBaseXP=" + baseXP);
+			local bonusXP = this.awardMentorBonusXP(rookie, baseXP);
+			::MentorRookie.Helpers.debugLog("valid battle result mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " battles=" + rel.BattlesTogether + " bonusXP=" + bonusXP);
 			this.logMilestonesAndGraduate(mentor, rookie, rel.BattlesTogether);
 		}
 
@@ -353,6 +376,8 @@ if (!("MentorRookie" in getroottable()))
 			shouldGraduate = true;
 			reason = "battle_and_level_requirement_met";
 		}
+
+		::MentorRookie.Helpers.debugLog("graduation checked mentor=" + _mentor.getName() + " mentorLevel=" + _mentor.getLevel() + " rookie=" + _rookie.getName() + " rookieLevel=" + _rookie.getLevel() + " battles=" + _battles + " requiredBattles=" + this.getSetting("GraduationBattleCount") + " requiredLevel=" + this.getSetting("GraduationLevel") + " shouldGraduate=" + (shouldGraduate ? "true" : "false"));
 
 		if (shouldGraduate)
 		{
