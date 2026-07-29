@@ -15,3 +15,4 @@ Use this after building with `modbb`.
 9. Confirm milestones log at 5, 15, 30, and 50 valid battles.
 10. Confirm graduation removes effects when the rookie reaches/passes mentor level.
 11. Confirm graduation after 50 valid battles when the rookie reaches configured graduation level.
+12. use case where either mentor or rookies got dismissed
