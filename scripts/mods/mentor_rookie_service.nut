@@ -655,7 +655,7 @@ if (!("MentorRookie" in getroottable()))
 		::MentorRookie.Helpers.debugLog("focused training notification queued mentor=" + _mentor.getName() + " rookie=" + _rookie.getName() + " focus=" + _focusAttributeID + " old=" + _oldValue + " new=" + _newValue + " gain=" + _gain);
 	}
 
-	function tryShowPendingTrainingNotification()
+	function showTrainingProgressEvent()
 	{
 		if (this.ActiveTrainingNotification != null) return false;
 		if (this.PendingTrainingNotifications.len() == 0) return false;
@@ -725,7 +725,7 @@ if (!("MentorRookie" in getroottable()))
 		}
 
 		this.clearBattleParticipants();
-		this.tryShowPendingTrainingNotification();
+		this.showTrainingProgressEvent();
 	}
 
 	function logMilestonesAndGraduate( _mentor, _rookie, _battles )

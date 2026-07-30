@@ -144,7 +144,7 @@ if (!("MentorRookie" in getroottable()))
 
 			if ("MentorRookie" in ::getroottable() && "Service" in ::MentorRookie)
 			{
-				::MentorRookie.Service.tryShowPendingTrainingNotification();
+				::MentorRookie.Service.showTrainingProgressEvent();
 			}
 		}
 	});
