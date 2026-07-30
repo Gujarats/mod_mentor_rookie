@@ -86,7 +86,7 @@ if (!("MentorRookie" in getroottable()))
 	);
 }
 
-::MentorRookie.HookMod.queue(">mod_msu", function()
+::MentorRookie.HookMod.queue(">mod_msu", ">mod_druid", ">mod_aura_routing", ">mod_bandages_enhanced", ">mod_from_the_grave", ">mod_legends", ">mod_necro", function()
 {
 	::MentorRookie.Mod <- ::MSU.Class.Mod(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 	::MentorRookie.registerSettings();
