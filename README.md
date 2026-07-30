@@ -1,10 +1,6 @@
 # Mentor Rookie
 
-Version `0.0.1`.
-
-Mentor Rookie lets one experienced brother mentor one lower-level rookie. When both brothers fight and survive the same battle, the rookie gains extra XP based on the rookie's normal battle XP.
-
-The mod is meant as an XP catch-up system. It does not copy traits, talent stars, backgrounds, or stats from the mentor.
+Mentor Rookie lets one experienced brother mentor one lower-level rookie. Gives the rookie proper mentor to grow stonger.
 
 ## Requirements
 
@@ -206,7 +202,3 @@ Useful log lines include:
 ## Known Issues
 
 - The Mentor Rookie screen may not show every character at once while browsing the mentor and rookie lists. Scroll up or down in the list to find the character you want.
-
-## Compatibility Notes
-
-This mod uses Modern Hooks and MSU settings. It does not edit vanilla files directly.
