@@ -5,7 +5,7 @@ if (!("MentorRookie" in getroottable()))
 
 ::MentorRookie.ID <- "mod_mentor_rookie";
 ::MentorRookie.Name <- "Mentor Rookie";
-::MentorRookie.Version <- "0.0.1";
+::MentorRookie.Version <- "0.0.2";
 
 ::MentorRookie.HookMod <- ::Hooks.register(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 ::MentorRookie.HookMod.require("mod_msu >= 1.9.0");
@@ -86,7 +86,7 @@ if (!("MentorRookie" in getroottable()))
 	);
 }
 
-::MentorRookie.HookMod.queue(">mod_msu", function()
+::MentorRookie.HookMod.queue(">mod_msu", ">mod_druid", ">mod_aura_routing", ">mod_bandages_enhanced", ">mod_from_the_grave", ">mod_legends", ">mod_necro", function()
 {
 	::MentorRookie.Mod <- ::MSU.Class.Mod(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 	::MentorRookie.registerSettings();
@@ -136,6 +136,16 @@ if (!("MentorRookie" in getroottable()))
 			local ret = __original();
 			::MentorRookie.Service.handleAfterCombat();
 			return ret;
+		}
+
+		q.onUpdate = @(__original) function()
+		{
+			__original();
+
+			if ("MentorRookie" in ::getroottable() && "Service" in ::MentorRookie)
+			{
+				::MentorRookie.Service.showTrainingProgressEvent();
+			}
 		}
 	});
 

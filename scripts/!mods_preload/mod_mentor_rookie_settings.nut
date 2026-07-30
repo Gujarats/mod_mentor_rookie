@@ -25,4 +25,11 @@ if (!("MentorRookie" in getroottable()))
 	graduation.addRangeSetting("GraduationLevel", 10, 2, 33, 1, "Graduation Level", "After enough battles, the rookie graduates when reaching this level.");
 
 	perk.addRangeSetting("MasterMentorPerkRow", 6, 1, 7, 1, "Master Mentor Perk Row", "Which perk row displays the Master Mentor perk shell. Requires restart.");
+	perk.addBooleanSetting("MasterMentorFocusedTrainingEnabled", true, "Enable Focused Training", "Enable permanent focused attribute gains from the Master Mentor perk.");
+	perk.addRangeSetting("MasterMentorRequiredBattles", 5, 1, 200, 1, "Focused Training Battles", "Battles together required before a focused training reward can trigger.");
+	perk.addRangeSetting("MasterMentorMaxGainPerAttribute", 20, 1, 200, 1, "Max Focused Attribute Gain", "Maximum permanent gain a rookie can receive for one focused attribute from one mentor-rookie relation.");
+	perk.addBooleanSetting("MasterMentorRequireBothAlive", true, "Require Both Alive", "Mentor and rookie must both survive the battle for focused training progress.");
+	perk.addBooleanSetting("MasterMentorRequireMentorParticipated", true, "Require Mentor Participation", "Mentor must participate in the battle for focused training progress.");
+	perk.addRangeSetting("MasterMentorChanceTwoToOne", 80, 0, 100, 1, "2-Star Mentor Bonus Chance", "Chance for Mentor 2 stars and Rookie 1 star to grant an additional +1.");
+	perk.addRangeSetting("MasterMentorChanceThreeToOne", 95, 0, 100, 1, "3-Star Mentor Bonus Chance", "Chance for Mentor 3 stars and Rookie 1 star to grant an additional +1.");
 }
