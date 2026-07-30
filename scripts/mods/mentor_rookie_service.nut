@@ -259,6 +259,73 @@ if (!("MentorRookie" in getroottable()))
 		return { Valid = false, Message = "Selected focus attribute is invalid." };
 	}
 
+	function getPairHistoryKey( _mentorID, _rookieID )
+	{
+		return "" + _mentorID + ":" + _rookieID;
+	}
+
+	function getPairHistoryPrefix( _mentorID, _rookieID )
+	{
+		return "MentorRookieHistory_" + _mentorID + "_" + _rookieID + "_";
+	}
+
+	function readPairHistory( _mentor, _rookie )
+	{
+		local empty = {
+			BattlesTogether = 0,
+			FocusAttributeID = null,
+			FocusedTrainingBattles = 0,
+			FocusedTrainingGain = 0
+		};
+
+		if (_mentor == null || _rookie == null) return empty;
+
+		local prefix = this.getPairHistoryPrefix(_mentor.getID(), _rookie.getID());
+		local flags = _rookie.getFlags();
+
+		if (!flags.has(prefix + "BattlesTogether"))
+		{
+			return empty;
+		}
+
+		return {
+			BattlesTogether = flags.get(prefix + "BattlesTogether"),
+			FocusAttributeID = flags.has(prefix + "FocusAttributeID") ? flags.get(prefix + "FocusAttributeID") : null,
+			FocusedTrainingBattles = flags.has(prefix + "FocusedTrainingBattles") ? flags.get(prefix + "FocusedTrainingBattles") : 0,
+			FocusedTrainingGain = flags.has(prefix + "FocusedTrainingGain") ? flags.get(prefix + "FocusedTrainingGain") : 0
+		};
+	}
+
+	function writePairHistory( _mentor, _rookie, _battles, _focusAttributeID = null, _focusedTrainingBattles = 0, _focusedTrainingGain = 0 )
+	{
+		if (_mentor == null || _rookie == null) return;
+
+		local prefix = this.getPairHistoryPrefix(_mentor.getID(), _rookie.getID());
+		local mentorFlags = _mentor.getFlags();
+		local rookieFlags = _rookie.getFlags();
+
+		mentorFlags.set(prefix + "BattlesTogether", _battles);
+		mentorFlags.set(prefix + "FocusedTrainingBattles", _focusedTrainingBattles);
+		mentorFlags.set(prefix + "FocusedTrainingGain", _focusedTrainingGain);
+
+		rookieFlags.set(prefix + "BattlesTogether", _battles);
+		rookieFlags.set(prefix + "FocusedTrainingBattles", _focusedTrainingBattles);
+		rookieFlags.set(prefix + "FocusedTrainingGain", _focusedTrainingGain);
+
+		if (_focusAttributeID != null)
+		{
+			mentorFlags.set(prefix + "FocusAttributeID", _focusAttributeID);
+			rookieFlags.set(prefix + "FocusAttributeID", _focusAttributeID);
+		}
+		else
+		{
+			mentorFlags.remove(prefix + "FocusAttributeID");
+			rookieFlags.remove(prefix + "FocusAttributeID");
+		}
+
+		::MentorRookie.Helpers.debugLog("pair history saved key=" + this.getPairHistoryKey(_mentor.getID(), _rookie.getID()) + " battles=" + _battles + " focus=" + (_focusAttributeID == null ? "<none>" : _focusAttributeID) + " trainingBattles=" + _focusedTrainingBattles + " trainingGain=" + _focusedTrainingGain);
+	}
+
 	function createRelationship( _mentorID, _rookieID )
 	{
 		this.rebuildRelationshipsFromRoster();
@@ -272,17 +339,21 @@ if (!("MentorRookie" in getroottable()))
 			return { Success = false, Message = validation.Message, Data = this.queryScreenData() };
 		}
 
+		local history = this.readPairHistory(mentor, rookie);
+
 		this.Relationships.push({
 			MentorID = mentor.getID(),
 			RookieID = rookie.getID(),
-			BattlesTogether = 0,
-			FocusAttributeID = null,
-			FocusedTrainingBattles = 0,
-			FocusedTrainingGain = 0
+			BattlesTogether = history.BattlesTogether,
+			FocusAttributeID = history.FocusAttributeID,
+			FocusedTrainingBattles = history.FocusedTrainingBattles,
+			FocusedTrainingGain = history.FocusedTrainingGain
 		});
-		this.writeRelationshipFlags(mentor, rookie, 0);
+		this.writeRelationshipFlags(mentor, rookie, history.BattlesTogether, history.FocusAttributeID, history.FocusedTrainingBattles, history.FocusedTrainingGain);
+		this.writePairHistory(mentor, rookie, history.BattlesTogether, history.FocusAttributeID, history.FocusedTrainingBattles, history.FocusedTrainingGain);
 		this.ensureRelationshipEffects(mentor, rookie);
 
+		::MentorRookie.Helpers.debugLog("relationship history restored mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " battles=" + history.BattlesTogether + " focus=" + (history.FocusAttributeID == null ? "<none>" : history.FocusAttributeID) + " trainingBattles=" + history.FocusedTrainingBattles + " trainingGain=" + history.FocusedTrainingGain);
 		::MentorRookie.Helpers.debugLog("created relationship mentor=" + mentor.getName() + " rookie=" + rookie.getName());
 		return {
 			Success = true,
@@ -318,6 +389,7 @@ if (!("MentorRookie" in getroottable()))
 		rel.FocusedTrainingBattles = 0;
 		rel.FocusedTrainingGain = 0;
 		this.writeRelationshipFlags(mentor, rookie, rel.BattlesTogether, _focusAttributeID, 0, 0);
+		this.writePairHistory(mentor, rookie, rel.BattlesTogether, _focusAttributeID, 0, 0);
 
 		local def = this.getFocusAttributeDef(_focusAttributeID);
 		::MentorRookie.Helpers.debugLog("focus selected mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " focus=" + _focusAttributeID);
@@ -339,8 +411,9 @@ if (!("MentorRookie" in getroottable()))
 
 		local mentor = ::MentorRookie.Helpers.getActorByID(rel.MentorID);
 		local rookie = ::MentorRookie.Helpers.getActorByID(rel.RookieID);
+		this.writePairHistory(mentor, rookie, rel.BattlesTogether, rel.FocusAttributeID, rel.FocusedTrainingBattles, rel.FocusedTrainingGain);
 		this.clearRelationship(mentor, rookie);
-		::MentorRookie.Helpers.debugLog("removed relationship rookieID=" + _rookieID);
+		::MentorRookie.Helpers.debugLog("removed active relationship but preserved pair history mentor=" + (mentor == null ? "<null>" : mentor.getName()) + " rookie=" + (rookie == null ? "<null>" : rookie.getName()) + " battles=" + rel.BattlesTogether + " focus=" + (rel.FocusAttributeID == null ? "<none>" : rel.FocusAttributeID) + " trainingBattles=" + rel.FocusedTrainingBattles + " trainingGain=" + rel.FocusedTrainingGain);
 
 		return { Success = true, Message = "Mentorship relationship removed.", Data = this.queryScreenData() };
 	}
@@ -720,6 +793,7 @@ if (!("MentorRookie" in getroottable()))
 			local bonusXP = this.awardMentorBonusXP(rookie, baseXP);
 			this.processFocusedTraining(rel, mentor, rookie, mentorAlive, rookieAlive);
 			this.writeRelationshipFlags(mentor, rookie, rel.BattlesTogether, rel.FocusAttributeID, rel.FocusedTrainingBattles, rel.FocusedTrainingGain);
+			this.writePairHistory(mentor, rookie, rel.BattlesTogether, rel.FocusAttributeID, rel.FocusedTrainingBattles, rel.FocusedTrainingGain);
 			::MentorRookie.Helpers.debugLog("valid battle result mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " battles=" + rel.BattlesTogether + " bonusXP=" + bonusXP);
 			this.logMilestonesAndGraduate(mentor, rookie, rel.BattlesTogether);
 		}

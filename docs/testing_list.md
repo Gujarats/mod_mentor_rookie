@@ -238,6 +238,35 @@ Needs manual in-game testing:
 - [ ] Fight battle afterward.
 - [ ] Confirm removed relationship gives no XP.
 - [ ] Confirm removed relationship gives no attribute gain.
+- [ ] Create a mentor-rookie relationship.
+- [ ] Fight valid battles until battle count is greater than `0`.
+- [ ] Select a focused attribute if the mentor has `Master Mentor`.
+- [ ] Trigger partial focused-training progress or focused-training gain.
+- [ ] Press `Remove` on the active relationship.
+- [ ] Confirm active relationship disappears.
+- [ ] Confirm mentor and rookie passive effects are removed.
+- [ ] Re-couple the same mentor and same rookie.
+- [ ] Confirm previous battle count is restored.
+- [ ] Confirm previous focused attribute is restored if one was selected.
+- [ ] Confirm previous focused-training progress is restored.
+- [ ] Confirm previous focused-training total gain is restored.
+
+Useful debug log lines:
+
+- `pair history saved`
+- `relationship history restored`
+- `removed active relationship but preserved pair history`
+
+## 18A. Pair-Specific History Test
+
+- [ ] Create Mentor A + Rookie B.
+- [ ] Fight valid battles until battle count is greater than `0`.
+- [ ] Press `Remove`.
+- [ ] Create Mentor C + Rookie B.
+- [ ] Confirm Mentor C + Rookie B starts from its own history, usually `0` if they were never paired before.
+- [ ] Press `Remove`.
+- [ ] Re-create Mentor A + Rookie B.
+- [ ] Confirm Mentor A + Rookie B restores the original battle count.
 
 ## 19. Save/Reload Persistence Test
 

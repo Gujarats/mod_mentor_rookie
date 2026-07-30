@@ -88,6 +88,14 @@ Default graduation settings:
 
 Graduation removes the active Mentor/Rookie status effects.
 
+## Relationship History
+
+Removing a mentor-rookie relationship from the `Shift+M` screen removes the active relationship and passive effects, but the pair's history is preserved.
+
+If the same mentor and same rookie are coupled again later, the mod restores that pair's previous battle count, focused attribute, focused-training progress, and focused-training gain.
+
+History is pair-specific. For example, Mentor A with Rookie B has separate history from Mentor C with Rookie B. This prevents progress from one mentor being transferred freely to another mentor.
+
 ## Settings
 
 Settings are available through MSU:
