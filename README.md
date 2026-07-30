@@ -104,21 +104,77 @@ Settings are available through MSU:
 - `Graduation Battle Count`: default `50`.
 - `Graduation Level`: default `10`.
 - `Master Mentor Perk Row`: default `6`, requires restart.
+- `Enable Focused Training`: default `true`.
+- `Focused Training Battles`: default `5`.
+- `Max Focused Attribute Gain`: default `20`.
+- `Require Both Alive`: default `true`.
+- `Require Mentor Participation`: default `true`.
+- `2-Star Mentor Bonus Chance`: default `80`.
+- `3-Star Mentor Bonus Chance`: default `95`.
 
 ## Master Mentor Perk
 
-The `Master Mentor` perk is currently a perk shell only in version `0.0.1`. It is visible for future compatibility, but it does not currently add extra bonuses by itself.
+The `Master Mentor` perk unlocks Focused Training for an existing mentor-rookie relationship.
 
-Current behavior:
+Focused Training is separate from the normal rookie XP bonus. The normal mentor-rookie XP system still works without this perk.
 
-- It is not required to create a mentor-rookie relationship.
-- It does not increase the rookie XP bonus.
-- It does not unlock mentoring.
-- It does not transfer traits.
-- It does not transfer talent stars.
-- It does not change graduation rules.
+### How Focused Training Works
 
-The actual mentoring system works through the `Shift+M` relationship screen and the visible `Mentor` / `Rookie` status effects.
+1. Create a mentor-rookie relationship from the `Shift+M` screen.
+2. The mentor must have the `Master Mentor` perk.
+3. Select the active relationship in the Mentor Rookie screen.
+4. Press `Activate Focused Training`.
+5. Choose one eligible attribute for the rookie to focus on.
+6. Fight valid battles together until the focused training requirement is reached.
+
+When the requirement is reached, the rookie receives a permanent gain to the selected attribute. A training event is shown afterward with the mentor name, rookie name, portrait images, and the attribute result.
+
+### Eligible Attributes
+
+Focused Training can use these attributes:
+
+- Hitpoints
+- Fatigue
+- Resolve
+- Initiative
+- Melee Skill
+- Ranged Skill
+- Melee Defense
+- Ranged Defense
+
+An attribute is only eligible if both the mentor and the rookie have at least one talent star in that attribute.
+
+### Locked Focus Choice
+
+The focused attribute is locked after it is selected for that relationship.
+
+This means you should choose carefully. The relationship is meant to make mentor and rookie hiring more selective from the start, not to freely swap training targets after every battle.
+
+### Focused Training Progress
+
+By default, Focused Training rewards trigger every `5` valid battles together.
+
+A focused training battle usually requires:
+
+- the mentor participates,
+- the rookie participates,
+- both survive the battle.
+
+These requirements can be changed in MSU settings.
+
+### Attribute Gain
+
+The gain depends on mentor and rookie talent stars in the focused attribute:
+
+- Mentor `1` star and rookie `1` star: `+2`.
+- Mentor `2` stars and rookie `1` star: `+2`, with an `80%` default chance for `+1` extra.
+- Mentor `3` stars and rookie `1` star: `+2`, with a `95%` default chance for `+1` extra.
+- Mentor `3` stars and rookie `2` stars: `+2`.
+- Mentor `3` stars and rookie `3` stars: `+3`.
+
+The default maximum permanent gain for one focused attribute in one relationship is `20`. This cap can be changed in MSU settings up to `200`.
+
+Focused Training does not transfer traits, backgrounds, or talent stars. It only adds permanent attribute points to the chosen attribute.
 
 ## Debugging
 
