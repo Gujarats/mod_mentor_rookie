@@ -259,7 +259,7 @@ if (!("MentorRookie" in getroottable()))
 		return { Valid = false, Message = "Selected focus attribute is invalid." };
 	}
 
-	function createRelationship( _mentorID, _rookieID, _focusAttributeID = null )
+	function createRelationship( _mentorID, _rookieID )
 	{
 		this.rebuildRelationshipsFromRoster();
 		local mentor = ::MentorRookie.Helpers.getActorByID(_mentorID);
@@ -272,28 +272,58 @@ if (!("MentorRookie" in getroottable()))
 			return { Success = false, Message = validation.Message, Data = this.queryScreenData() };
 		}
 
-		local focusValidation = this.validateFocusAttribute(_mentorID, _rookieID, _focusAttributeID);
-		if (!focusValidation.Valid)
-		{
-			::MentorRookie.Helpers.debugLog("create relationship rejected: focus invalid mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " focus=" + _focusAttributeID + " reason=" + focusValidation.Message);
-			return { Success = false, Message = focusValidation.Message, Data = this.queryScreenData() };
-		}
-
 		this.Relationships.push({
 			MentorID = mentor.getID(),
 			RookieID = rookie.getID(),
 			BattlesTogether = 0,
-			FocusAttributeID = _focusAttributeID,
+			FocusAttributeID = null,
 			FocusedTrainingBattles = 0,
 			FocusedTrainingGain = 0
 		});
-		this.writeRelationshipFlags(mentor, rookie, 0, _focusAttributeID, 0, 0);
+		this.writeRelationshipFlags(mentor, rookie, 0);
 		this.ensureRelationshipEffects(mentor, rookie);
 
-		::MentorRookie.Helpers.debugLog("created relationship mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " focus=" + (_focusAttributeID != null ? _focusAttributeID : "none"));
+		::MentorRookie.Helpers.debugLog("created relationship mentor=" + mentor.getName() + " rookie=" + rookie.getName());
 		return {
 			Success = true,
 			Message = mentor.getName() + " is now mentoring " + rookie.getName() + ".",
+			Data = this.queryScreenData()
+		};
+	}
+
+	function setRelationshipFocusAttribute( _rookieID, _focusAttributeID )
+	{
+		this.rebuildRelationshipsFromRoster();
+		local rel = this.getRelationshipByRookieID(_rookieID);
+		if (rel == null)
+		{
+			return { Success = false, Message = "No mentorship relationship was found.", Data = this.queryScreenData() };
+		}
+
+		if (rel.FocusAttributeID != null)
+		{
+			return { Success = false, Message = "Focused training is already locked for this relationship.", Data = this.queryScreenData() };
+		}
+
+		local mentor = ::MentorRookie.Helpers.getActorByID(rel.MentorID);
+		local rookie = ::MentorRookie.Helpers.getActorByID(rel.RookieID);
+		local focusValidation = this.validateFocusAttribute(rel.MentorID, rel.RookieID, _focusAttributeID);
+		if (!focusValidation.Valid)
+		{
+			::MentorRookie.Helpers.debugLog("focus selection rejected mentorID=" + rel.MentorID + " rookieID=" + rel.RookieID + " focus=" + _focusAttributeID + " reason=" + focusValidation.Message);
+			return { Success = false, Message = focusValidation.Message, Data = this.queryScreenData() };
+		}
+
+		rel.FocusAttributeID = _focusAttributeID;
+		rel.FocusedTrainingBattles = 0;
+		rel.FocusedTrainingGain = 0;
+		this.writeRelationshipFlags(mentor, rookie, rel.BattlesTogether, _focusAttributeID, 0, 0);
+
+		local def = this.getFocusAttributeDef(_focusAttributeID);
+		::MentorRookie.Helpers.debugLog("focus selected mentor=" + mentor.getName() + " rookie=" + rookie.getName() + " focus=" + _focusAttributeID);
+		return {
+			Success = true,
+			Message = "Focused training locked: " + (def != null ? def.Name : _focusAttributeID) + ".",
 			Data = this.queryScreenData()
 		};
 	}

@@ -138,7 +138,7 @@ if (!("MentorRookie" in getroottable()))
 			return ret;
 		}
 
-		q.update = @(__original) function()
+		q.onUpdate = @(__original) function()
 		{
 			__original();
 

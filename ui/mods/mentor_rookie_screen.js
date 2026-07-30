@@ -8,11 +8,15 @@ var MentorRookieScreen = function()
 	this.mRookieListScrollContainer = null;
 	this.mRelationships = null;
 	this.mFocusSection = null;
+	this.mFocusTitle = null;
 	this.mFocusList = null;
+	this.mFocusActivateButton = null;
 	this.mMessage = null;
 	this.mData = null;
 	this.mSelectedMentorID = null;
 	this.mSelectedRookieID = null;
+	this.mSelectedRelationshipRookieID = null;
+	this.mFocusActivated = false;
 	this.mSelectedFocusAttributeID = null;
 };
 
@@ -42,6 +46,7 @@ MentorRookieScreen.prototype.createDIV = function()
 	var header = $('<div class="mentor-rookie-header"/>');
 	var body = $('<div class="mentor-rookie-body"/>');
 	var columns = $('<div class="mentor-rookie-columns"/>');
+	var createActions = $('<div class="mentor-rookie-create-actions"/>');
 	var actions = $('<div class="mentor-rookie-actions"/>');
 
 	header.append($('<div class="title title-font-big font-color-title">Mentor Rookie</div>'));
@@ -50,8 +55,12 @@ MentorRookieScreen.prototype.createDIV = function()
 	var rookieListLayout = $('<div class="mentor-rookie-list-layout"/>');
 	this.mRelationships = $('<div class="mentor-rookie-relationships"/>');
 	this.mFocusSection = $('<div class="mentor-rookie-focus-section"/>');
-	this.mFocusSection.append($('<div class="mentor-rookie-section-title title-font-normal font-color-title">Focused Training</div>'));
+	this.mFocusTitle = $('<div class="mentor-rookie-section-title title-font-normal font-color-title">Focused Training</div>');
+	this.mFocusTitle.attr('title', 'Select an active relationship to inspect focused training.');
+	this.mFocusSection.append(this.mFocusTitle);
+	this.mFocusActivateButton = $('<button class="mentor-rookie-focus-activate-button text-font-normal">Activate Focused Training</button>');
 	this.mFocusList = $('<div class="mentor-rookie-focus-list"/>');
+	this.mFocusSection.append(this.mFocusActivateButton);
 	this.mFocusSection.append(this.mFocusList);
 	this.mMessage = $('<div class="mentor-rookie-message description-font-medium font-color-description">Select one mentor and one rookie.</div>');
 
@@ -75,13 +84,18 @@ MentorRookieScreen.prototype.createDIV = function()
 	{
 		self.notifyBackendCloseButtonPressed();
 	});
+	this.mFocusActivateButton.click(function()
+	{
+		self.activateFocusedTraining();
+	});
 
 	columns.append(mentorColumn);
 	columns.append(rookieColumn);
-	actions.append(createButton);
+	createActions.append(createButton);
 	actions.append(closeButton);
 
 	body.append(columns);
+	body.append(createActions);
 	body.append($('<div class="mentor-rookie-section-title mentor-rookie-relationships-title title-font-normal font-color-title">Active Relationships</div>'));
 	body.append(this.mRelationships);
 	body.append(this.mFocusSection);
@@ -193,15 +207,29 @@ MentorRookieScreen.prototype.render = function()
 	{
 		var rel = data.Relationships[r];
 		var relRow = $('<div class="mentor-rookie-relationship-row"/>');
+		if (rel.RookieID === this.mSelectedRelationshipRookieID)
+		{
+			relRow.addClass('is-selected');
+		}
 		var focusText = rel.FocusAttributeID !== null
 			? ' | Focus: ' + rel.FocusAttributeName + ' | Training ' + rel.FocusedTrainingBattles + '/' + rel.FocusedTrainingRequiredBattles + ' | Gain ' + rel.FocusedTrainingGain + '/' + rel.FocusedTrainingMaxGain
 			: ' | Focus: None';
 		relRow.append($('<div class="mentor-rookie-relationship-text title-font-normal font-color-title"/>').text(rel.MentorName + ' -> ' + rel.RookieName + ' (' + rel.BattlesTogether + ' battles)' + focusText));
+		relRow.data('rookie-id', rel.RookieID);
+		relRow.click(function(_event)
+		{
+			self.mSelectedRelationshipRookieID = parseInt($(_event.currentTarget).data('rookie-id'), 10);
+			self.mFocusActivated = false;
+			self.mSelectedFocusAttributeID = null;
+			self.render();
+			self.querySelectedRelationshipFocusOptions();
+		});
 
 		var removeButton = $('<button class="mentor-rookie-small-button text-font-normal">Remove</button>');
 		removeButton.data('rookie-id', rel.RookieID);
 		removeButton.click(function(_event)
 		{
+			_event.stopPropagation();
 			self.removeRelationship(_event);
 		});
 
@@ -272,9 +300,7 @@ MentorRookieScreen.prototype.createBrotherRow = function(_bro, _role)
 			self.mSelectedRookieID = _bro.ID;
 		}
 
-		self.mSelectedFocusAttributeID = null;
 		self.render();
-		self.queryFocusOptions();
 	});
 
 	content.append(name);
@@ -296,7 +322,7 @@ MentorRookieScreen.prototype.createRelationship = function()
 		return;
 	}
 
-	SQ.call(this.mSQHandle, 'onCreateRelationship', [this.mSelectedMentorID, this.mSelectedRookieID, this.mSelectedFocusAttributeID], function(_result)
+	SQ.call(this.mSQHandle, 'onCreateRelationship', [this.mSelectedMentorID, this.mSelectedRookieID], function(_result)
 	{
 		self.handleResult(_result);
 	});
@@ -321,17 +347,20 @@ MentorRookieScreen.prototype.handleResult = function(_result)
 		{
 			this.mSelectedMentorID = null;
 			this.mSelectedRookieID = null;
+			this.mSelectedRelationshipRookieID = null;
+			this.mFocusActivated = false;
 			this.mSelectedFocusAttributeID = null;
 			this.updateData(_result.Data);
 		}
 	}
 };
 
-MentorRookieScreen.prototype.queryFocusOptions = function()
+MentorRookieScreen.prototype.querySelectedRelationshipFocusOptions = function()
 {
 	var self = this;
+	var relationship = this.getSelectedRelationship();
 
-	if (this.mSelectedMentorID === null || this.mSelectedRookieID === null)
+	if (relationship === null)
 	{
 		if (this.mData !== null)
 		{
@@ -340,7 +369,7 @@ MentorRookieScreen.prototype.queryFocusOptions = function()
 		return;
 	}
 
-	SQ.call(this.mSQHandle, 'onQueryFocusOptions', [this.mSelectedMentorID, this.mSelectedRookieID], function(_options)
+	SQ.call(this.mSQHandle, 'onQueryFocusOptions', [relationship.MentorID, relationship.RookieID], function(_options)
 	{
 		if (self.mData !== null)
 		{
@@ -354,13 +383,40 @@ MentorRookieScreen.prototype.renderFocusOptions = function()
 {
 	var self = this;
 	var options = this.mData && this.mData.SelectedPairFocusOptions ? this.mData.SelectedPairFocusOptions : [];
+	var relationship = this.getSelectedRelationship();
 	this.mFocusList.empty();
+	this.mFocusActivateButton.removeClass('display-none').addClass('display-block');
 
-	if (this.mSelectedMentorID === null || this.mSelectedRookieID === null)
+	if (relationship === null)
 	{
-		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">Select a mentor and rookie to see focused training options.</div>'));
+		this.mFocusTitle.text('Focused Training (Locked)');
+		this.mFocusTitle.attr('title', 'Select an active relationship to inspect focused training.');
+		this.mFocusActivateButton.addClass('is-disabled').text('Activate Focused Training');
+		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">Select an active relationship to inspect focused training.</div>'));
 		return;
 	}
+
+	if (relationship.FocusAttributeID !== null)
+	{
+		this.mFocusTitle.text('Focused Training (Locked)');
+		this.mFocusTitle.attr('title', 'Focused training is locked to ' + relationship.FocusAttributeName + ' for this relationship.');
+		this.mFocusActivateButton.addClass('is-disabled').text('Focused Training Locked');
+		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">' + relationship.MentorName + ' -> ' + relationship.RookieName + ' | Focus: ' + relationship.FocusAttributeName + ' | Training ' + relationship.FocusedTrainingBattles + ' / ' + relationship.FocusedTrainingRequiredBattles + ' | Gain ' + relationship.FocusedTrainingGain + ' / ' + relationship.FocusedTrainingMaxGain + '</div>'));
+		return;
+	}
+
+	if (!this.mFocusActivated)
+	{
+		this.mFocusTitle.text('Focused Training (Unlocked)');
+		this.mFocusTitle.attr('title', 'Click Activate Focused Training to choose one attribute for this relationship. The chosen focus will be locked.');
+		this.mFocusActivateButton.removeClass('is-disabled').text('Activate Focused Training');
+		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">Selected pair: ' + relationship.MentorName + ' -> ' + relationship.RookieName + '. Activate focused training to choose an attribute.</div>'));
+		return;
+	}
+
+	this.mFocusTitle.text('Focused Training (Choose Attribute)');
+	this.mFocusTitle.attr('title', 'Choose one available attribute. Showing ' + options.length + ' focus attributes.');
+	this.mFocusActivateButton.addClass('is-disabled').text('Choose Focus Attribute');
 
 	if (options.length === 0)
 	{
@@ -397,7 +453,7 @@ MentorRookieScreen.prototype.renderFocusOptions = function()
 			}
 
 			self.mSelectedFocusAttributeID = target.data('focus-id');
-			self.renderFocusOptions();
+			self.setFocusAttribute();
 		});
 
 		row.append(name);
@@ -405,6 +461,8 @@ MentorRookieScreen.prototype.renderFocusOptions = function()
 		row.append(status);
 		this.mFocusList.append(row);
 	}
+
+	this.mFocusList.scrollTop(0);
 };
 
 MentorRookieScreen.prototype.formatStars = function(_count)
@@ -416,6 +474,52 @@ MentorRookieScreen.prototype.formatStars = function(_count)
 	}
 
 	return stars === '' ? '-' : stars;
+};
+
+MentorRookieScreen.prototype.getSelectedRelationship = function()
+{
+	if (this.mSelectedRelationshipRookieID === null || this.mData === null || !this.mData.Relationships)
+	{
+		return null;
+	}
+
+	for (var i = 0; i < this.mData.Relationships.length; i++)
+	{
+		if (this.mData.Relationships[i].RookieID === this.mSelectedRelationshipRookieID)
+		{
+			return this.mData.Relationships[i];
+		}
+	}
+
+	return null;
+};
+
+MentorRookieScreen.prototype.activateFocusedTraining = function()
+{
+	var relationship = this.getSelectedRelationship();
+	if (relationship === null || relationship.FocusAttributeID !== null)
+	{
+		return;
+	}
+
+	this.mFocusActivated = true;
+	this.querySelectedRelationshipFocusOptions();
+	this.renderFocusOptions();
+};
+
+MentorRookieScreen.prototype.setFocusAttribute = function()
+{
+	var self = this;
+	var relationship = this.getSelectedRelationship();
+	if (relationship === null || this.mSelectedFocusAttributeID === null)
+	{
+		return;
+	}
+
+	SQ.call(this.mSQHandle, 'onSetFocusAttribute', [relationship.RookieID, this.mSelectedFocusAttributeID], function(_result)
+	{
+		self.handleResult(_result);
+	});
 };
 
 MentorRookieScreen.prototype.notifyBackendCloseButtonPressed = function()
