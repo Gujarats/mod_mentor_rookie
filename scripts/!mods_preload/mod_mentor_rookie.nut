@@ -137,6 +137,16 @@ if (!("MentorRookie" in getroottable()))
 			::MentorRookie.Service.handleAfterCombat();
 			return ret;
 		}
+
+		q.update = @(__original) function()
+		{
+			__original();
+
+			if ("MentorRookie" in ::getroottable() && "Service" in ::MentorRookie)
+			{
+				::MentorRookie.Service.tryShowPendingTrainingNotification();
+			}
+		}
 	});
 
 	mod.hook("scripts/ui/global/data_helper", function(q)

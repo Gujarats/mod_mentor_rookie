@@ -7,10 +7,13 @@ var MentorRookieScreen = function()
 	this.mRookieList = null;
 	this.mRookieListScrollContainer = null;
 	this.mRelationships = null;
+	this.mFocusSection = null;
+	this.mFocusList = null;
 	this.mMessage = null;
 	this.mData = null;
 	this.mSelectedMentorID = null;
 	this.mSelectedRookieID = null;
+	this.mSelectedFocusAttributeID = null;
 };
 
 MentorRookieScreen.prototype.isConnected = function()
@@ -46,6 +49,10 @@ MentorRookieScreen.prototype.createDIV = function()
 	var mentorListLayout = $('<div class="mentor-rookie-list-layout"/>');
 	var rookieListLayout = $('<div class="mentor-rookie-list-layout"/>');
 	this.mRelationships = $('<div class="mentor-rookie-relationships"/>');
+	this.mFocusSection = $('<div class="mentor-rookie-focus-section"/>');
+	this.mFocusSection.append($('<div class="mentor-rookie-section-title title-font-normal font-color-title">Focused Training</div>'));
+	this.mFocusList = $('<div class="mentor-rookie-focus-list"/>');
+	this.mFocusSection.append(this.mFocusList);
 	this.mMessage = $('<div class="mentor-rookie-message description-font-medium font-color-description">Select one mentor and one rookie.</div>');
 
 	var mentorColumn = $('<div class="mentor-rookie-column is-left"/>');
@@ -77,6 +84,7 @@ MentorRookieScreen.prototype.createDIV = function()
 	body.append(columns);
 	body.append($('<div class="mentor-rookie-section-title mentor-rookie-relationships-title title-font-normal font-color-title">Active Relationships</div>'));
 	body.append(this.mRelationships);
+	body.append(this.mFocusSection);
 	body.append(this.mMessage);
 	body.append(actions);
 
@@ -167,6 +175,7 @@ MentorRookieScreen.prototype.render = function()
 	this.mMentorListScrollContainer.empty();
 	this.mRookieListScrollContainer.empty();
 	this.mRelationships.empty();
+	this.renderFocusOptions();
 
 	for (var i = 0; i < data.Roster.length; i++)
 	{
@@ -184,7 +193,10 @@ MentorRookieScreen.prototype.render = function()
 	{
 		var rel = data.Relationships[r];
 		var relRow = $('<div class="mentor-rookie-relationship-row"/>');
-		relRow.append($('<div class="mentor-rookie-relationship-text title-font-normal font-color-title"/>').text(rel.MentorName + ' -> ' + rel.RookieName + ' (' + rel.BattlesTogether + ' battles)'));
+		var focusText = rel.FocusAttributeID !== null
+			? ' | Focus: ' + rel.FocusAttributeName + ' | Training ' + rel.FocusedTrainingBattles + '/' + rel.FocusedTrainingRequiredBattles + ' | Gain ' + rel.FocusedTrainingGain + '/' + rel.FocusedTrainingMaxGain
+			: ' | Focus: None';
+		relRow.append($('<div class="mentor-rookie-relationship-text title-font-normal font-color-title"/>').text(rel.MentorName + ' -> ' + rel.RookieName + ' (' + rel.BattlesTogether + ' battles)' + focusText));
 
 		var removeButton = $('<button class="mentor-rookie-small-button text-font-normal">Remove</button>');
 		removeButton.data('rookie-id', rel.RookieID);
@@ -260,7 +272,9 @@ MentorRookieScreen.prototype.createBrotherRow = function(_bro, _role)
 			self.mSelectedRookieID = _bro.ID;
 		}
 
+		self.mSelectedFocusAttributeID = null;
 		self.render();
+		self.queryFocusOptions();
 	});
 
 	content.append(name);
@@ -282,7 +296,7 @@ MentorRookieScreen.prototype.createRelationship = function()
 		return;
 	}
 
-	SQ.call(this.mSQHandle, 'onCreateRelationship', [this.mSelectedMentorID, this.mSelectedRookieID], function(_result)
+	SQ.call(this.mSQHandle, 'onCreateRelationship', [this.mSelectedMentorID, this.mSelectedRookieID, this.mSelectedFocusAttributeID], function(_result)
 	{
 		self.handleResult(_result);
 	});
@@ -307,9 +321,101 @@ MentorRookieScreen.prototype.handleResult = function(_result)
 		{
 			this.mSelectedMentorID = null;
 			this.mSelectedRookieID = null;
+			this.mSelectedFocusAttributeID = null;
 			this.updateData(_result.Data);
 		}
 	}
+};
+
+MentorRookieScreen.prototype.queryFocusOptions = function()
+{
+	var self = this;
+
+	if (this.mSelectedMentorID === null || this.mSelectedRookieID === null)
+	{
+		if (this.mData !== null)
+		{
+			this.mData.SelectedPairFocusOptions = [];
+		}
+		return;
+	}
+
+	SQ.call(this.mSQHandle, 'onQueryFocusOptions', [this.mSelectedMentorID, this.mSelectedRookieID], function(_options)
+	{
+		if (self.mData !== null)
+		{
+			self.mData.SelectedPairFocusOptions = _options || [];
+			self.renderFocusOptions();
+		}
+	});
+};
+
+MentorRookieScreen.prototype.renderFocusOptions = function()
+{
+	var self = this;
+	var options = this.mData && this.mData.SelectedPairFocusOptions ? this.mData.SelectedPairFocusOptions : [];
+	this.mFocusList.empty();
+
+	if (this.mSelectedMentorID === null || this.mSelectedRookieID === null)
+	{
+		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">Select a mentor and rookie to see focused training options.</div>'));
+		return;
+	}
+
+	if (options.length === 0)
+	{
+		this.mFocusList.append($('<div class="mentor-rookie-focus-empty description-font-medium font-color-description">No focus options available.</div>'));
+		return;
+	}
+
+	for (var i = 0; i < options.length; i++)
+	{
+		var option = options[i];
+		var row = $('<div class="mentor-rookie-focus-row"/>');
+		var name = $('<div class="mentor-rookie-focus-name title-font-normal font-color-title"/>').text(option.Name);
+		var stars = $('<div class="mentor-rookie-focus-stars text-font-normal"/>').text('Mentor ' + this.formatStars(option.MentorStars) + ' / Rookie ' + this.formatStars(option.RookieStars));
+		var status = $('<div class="mentor-rookie-focus-status description-font-medium"/>').text(option.IsValid ? 'Available' : option.Reason);
+
+		if (option.ID === this.mSelectedFocusAttributeID)
+		{
+			row.addClass('is-selected');
+		}
+
+		if (!option.IsValid)
+		{
+			row.addClass('is-locked');
+		}
+
+		row.data('focus-id', option.ID);
+		row.data('is-valid', option.IsValid);
+		row.click(function(_event)
+		{
+			var target = $(_event.currentTarget);
+			if (!target.data('is-valid'))
+			{
+				return;
+			}
+
+			self.mSelectedFocusAttributeID = target.data('focus-id');
+			self.renderFocusOptions();
+		});
+
+		row.append(name);
+		row.append(stars);
+		row.append(status);
+		this.mFocusList.append(row);
+	}
+};
+
+MentorRookieScreen.prototype.formatStars = function(_count)
+{
+	var stars = '';
+	for (var i = 0; i < _count; i++)
+	{
+		stars += '*';
+	}
+
+	return stars === '' ? '-' : stars;
 };
 
 MentorRookieScreen.prototype.notifyBackendCloseButtonPressed = function()

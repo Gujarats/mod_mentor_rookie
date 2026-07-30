@@ -60,7 +60,15 @@ this.mentor_rookie_screen <- {
 	{
 		local mentorID = _data[0];
 		local rookieID = _data[1];
-		return ::MentorRookie.Service.createRelationship(mentorID, rookieID);
+		local focusAttributeID = _data.len() > 2 ? _data[2] : null;
+		return ::MentorRookie.Service.createRelationship(mentorID, rookieID, focusAttributeID);
+	}
+
+	function onQueryFocusOptions( _data )
+	{
+		local mentorID = _data[0];
+		local rookieID = _data[1];
+		return ::MentorRookie.Service.getFocusAttributeOptions(mentorID, rookieID);
 	}
 
 	function onRemoveRelationship( _data )
