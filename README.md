@@ -166,13 +166,15 @@ These requirements can be changed in MSU settings.
 
 The gain depends on mentor and rookie talent stars in the focused attribute:
 
-- Mentor `1` star and rookie `1` star: `+2`.
-- Mentor `2` stars and rookie `1` star: `+2`, with an `80%` default chance for `+1` extra.
-- Mentor `3` stars and rookie `1` star: `+2`, with a `95%` default chance for `+1` extra.
+- Mentor `1` star and rookie `1` star: `+1`.
+- Mentor `2` stars and rookie `1` star: `+1`, with an `80%` default chance for `+1` extra.
+- Mentor `3` stars and rookie `1` star: `+1`, with a `95%` default chance for `+1` extra.
 - Mentor `3` stars and rookie `2` stars: `+2`.
 - Mentor `3` stars and rookie `3` stars: `+3`.
 
 The default maximum permanent gain for one focused attribute in one relationship is `20`. This cap can be changed in MSU settings up to `200`.
+
+Because relationships can graduate before reaching the cap, the `20` maximum is a ceiling, not a guaranteed outcome. Lower-star pairings progress slowly, while rare high-star pairings can reach stronger results before graduation.
 
 Focused Training does not transfer traits, backgrounds, or talent stars. It only adds permanent attribute points to the chosen attribute.
 

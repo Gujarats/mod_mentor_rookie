@@ -522,16 +522,16 @@ if (!("MentorRookie" in getroottable()))
 
 		if (mentorStars == 1 && rookieStars == 1)
 		{
-			gain = 2;
+			gain = 1;
 		}
 		else if (mentorStars == 2 && rookieStars == 1)
 		{
-			gain = 2;
+			gain = 1;
 			if (::Math.rand(1, 100) <= this.getSetting("MasterMentorChanceTwoToOne")) gain += 1;
 		}
 		else if (mentorStars == 3 && rookieStars == 1)
 		{
-			gain = 2;
+			gain = 1;
 			if (::Math.rand(1, 100) <= this.getSetting("MasterMentorChanceThreeToOne")) gain += 1;
 		}
 		else if (mentorStars == 3 && rookieStars == 2)

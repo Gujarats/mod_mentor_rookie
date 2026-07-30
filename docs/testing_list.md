@@ -175,15 +175,15 @@ Needs manual in-game testing:
 ## 13. Attribute Gain Rule Test
 
 - [ ] Test Mentor 1 star / Rookie 1 star.
-- [ ] Confirm expected gain.
+- [ ] Confirm expected gain is `+1`.
 - [ ] Test Mentor 2 stars / Rookie 1 star.
-- [ ] Confirm expected gain and bonus chance behavior.
+- [ ] Confirm expected gain is `+1` or `+2`, depending on the configured `2-Star Mentor Bonus Chance` roll.
 - [ ] Test Mentor 3 stars / Rookie 1 star.
-- [ ] Confirm expected gain and bonus chance behavior.
+- [ ] Confirm expected gain is `+1` or `+2`, depending on the configured `3-Star Mentor Bonus Chance` roll.
 - [ ] Test Mentor 3 stars / Rookie 2 stars.
-- [ ] Confirm expected gain.
+- [ ] Confirm expected gain is `+2`.
 - [ ] Test Mentor 3 stars / Rookie 3 stars.
-- [ ] Confirm expected gain.
+- [ ] Confirm expected gain is `+3`.
 - [ ] For each case, record rookie attribute before battle.
 - [ ] For each case, confirm rookie attribute after battle.
 - [ ] For each case, confirm log shows mentor stars, rookie stars, roll chance, and final gain.
@@ -196,6 +196,9 @@ Needs manual in-game testing:
 - [ ] Confirm once cap is reached, no further increase happens.
 - [ ] Confirm UI shows gain cap, for example `3 / 3`.
 - [ ] Confirm logs say max gain reached.
+- [ ] Set max focused attribute gain to `2`.
+- [ ] Trigger repeated rewards with a high-star pair.
+- [ ] Confirm total permanent focused gain does not exceed `2`.
 
 ## 15. Notification Event Test
 
@@ -271,4 +274,3 @@ If there is not enough time to run everything, prioritize these:
 - [ ] Focused training reward.
 - [ ] Post-battle notification event.
 - [ ] Save/reload persistence.
-
