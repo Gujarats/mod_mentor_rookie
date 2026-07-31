@@ -202,3 +202,4 @@ Useful log lines include:
 ## Known Issues
 
 - The Mentor Rookie screen may not show every character at once while browsing the mentor and rookie lists. Scroll up or down in the list to find the character you want.
+- Stale relationship cleanup has only been verified for a partner that no longer exists in the current player roster. It has not yet been tested in game for manual dismissal, tactical death, or devour/eaten removal paths.
