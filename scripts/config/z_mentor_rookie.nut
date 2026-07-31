@@ -22,8 +22,8 @@ addPerk({
 	Script = "scripts/skills/perks/master_mentor_perk",
 	Name = "Master Mentor",
 	Tooltip = "This brother is especially effective at guiding rookies. In version 0.0.1 this perk is a compatibility shell and does not change hiring balance.",
-	Icon = "ui/perks/perk_25.png",
-	IconDisabled = "ui/perks/perk_25_sw.png",
+	Icon = "ui/perks/mentor_rookie_perk.png",
+	IconDisabled = "ui/perks/mentor_rookie_perk_sw.png",
 	Row = 6
 });
 
