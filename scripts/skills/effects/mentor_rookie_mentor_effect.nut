@@ -18,8 +18,21 @@ this.mentor_rookie_mentor_effect <- this.inherit("scripts/skills/skill", {
 	{
 		local actor = this.getContainer().getActor();
 		local ret = this.skill.getTooltip();
+		local rookie = null;
+
+		if (actor != null && actor.getFlags().has("MentorRookiePartnerID"))
+		{
+			rookie = ::MentorRookie.Helpers.getActorByID(actor.getFlags().get("MentorRookiePartnerID"));
+		}
+
 		ret.push({
 			id = 10,
+			type = "text",
+			icon = "ui/icons/special.png",
+			text = "Rookie: [color=" + this.Const.UI.Color.PositiveValue + "]" + (rookie != null ? rookie.getName() : "Unknown") + "[/color]"
+		});
+		ret.push({
+			id = 11,
 			type = "text",
 			icon = "ui/icons/special.png",
 			text = "Mentoring one rookie. Fight together to help the rookie gain bonus experience."
@@ -44,7 +57,7 @@ this.mentor_rookie_mentor_effect <- this.inherit("scripts/skills/skill", {
 					text = "Focused training: [color=" + this.Const.UI.Color.PositiveValue + "]" + def.Name + "[/color]"
 				});
 				ret.push({
-					id = 21,
+					id = 22,
 					type = "text",
 					icon = "ui/icons/days_wounded.png",
 					text = "Training progress: [color=" + this.Const.UI.Color.PositiveValue + "]" + progress + " / " + required + "[/color] battles, gain [color=" + this.Const.UI.Color.PositiveValue + "]" + gain + " / " + maxGain + "[/color]"
