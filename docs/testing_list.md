@@ -291,6 +291,42 @@ Useful debug log lines:
 - [ ] Confirm no crashes when all relationships graduate.
 - [ ] Confirm no crashes when relationships are removed.
 
+## 21. Stale Relationship Cleanup
+
+- [ ] Create a mentor-rookie relationship.
+- [ ] Confirm both brothers show Mentor/Rookie passive effects.
+- [ ] Dismiss the rookie from the character screen.
+- [ ] Reopen the Mentor Rookie screen.
+- [ ] Confirm the mentor passive effect is removed.
+- [ ] Confirm the active relationship no longer appears.
+- [ ] Confirm `log.html` contains `cleared stale relationship` with `reason=partner_not_in_roster`.
+- [ ] Create a second mentor-rookie relationship.
+- [ ] Kill the rookie in battle.
+- [ ] Return to world map.
+- [ ] Confirm the mentor passive effect is removed after combat.
+- [ ] Confirm `log.html` contains `cleared stale relationship`.
+- [ ] Confirm pair history still works if the same surviving mentor is later paired with a valid rookie.
+
+Log check command:
+
+```powershell
+$html = Get-Content -Raw -Path "C:\Users\gujar\Documents\Battle Brothers\log.html"
+[regex]::Matches($html, '<div class="time">(?<time>.*?)</div><div class="tag">(?<tag>.*?)</div><div class="text">(?<text>.*?)</div>') | ForEach-Object {
+	$raw = $_.Groups['text'].Value
+	$clean = ($raw -replace '<br>',' ' -replace '<.*?>','')
+	$text = [System.Net.WebUtility]::HtmlDecode($clean)
+	if ($text -match 'MentorRookie|cleared stale relationship|partner_not_in_roster') {
+		"{0} [{1}] {2}" -f $_.Groups['time'].Value, $_.Groups['tag'].Value, $text
+	}
+}
+```
+
+Expected output includes:
+
+```text
+[MentorRookie] cleared stale relationship actor=Ottmar actorID=... role=mentor missingPartnerID=... reason=partner_not_in_roster
+```
+
 ## Priority Manual Test Set
 
 If there is not enough time to run everything, prioritize these:
@@ -303,3 +339,4 @@ If there is not enough time to run everything, prioritize these:
 - [ ] Focused training reward.
 - [ ] Post-battle notification event.
 - [ ] Save/reload persistence.
+- [ ] Stale relationship cleanup.

@@ -125,6 +125,8 @@ if (!("MentorRookie" in getroottable()))
 		local rows = [];
 		if (!("World" in getroottable()) || ::World.getPlayerRoster() == null) return rows;
 
+		this.repairStaleRelationshipFlags();
+
 		foreach (bro in ::World.getPlayerRoster().getAll())
 		{
 			rows.push({
@@ -458,7 +460,7 @@ if (!("MentorRookie" in getroottable()))
 		_actor.getFlags().remove("MentorRookieFocusedTrainingGain");
 	}
 
-	function clearRelationship( _mentor, _rookie )
+	function clearRelationshipWithoutRebuild( _mentor, _rookie )
 	{
 		if (_mentor != null)
 		{
@@ -471,7 +473,89 @@ if (!("MentorRookie" in getroottable()))
 			this.clearRelationshipFlags(_rookie);
 			_rookie.getSkills().removeByID("effects.mentor_rookie_rookie");
 		}
+	}
 
+	function clearStaleRelationshipActor( _actor, _reason )
+	{
+		if (_actor == null) return;
+
+		local role = _actor.getFlags().has("MentorRookieRole") ? _actor.getFlags().get("MentorRookieRole") : "none";
+		local partnerID = _actor.getFlags().has("MentorRookiePartnerID") ? _actor.getFlags().get("MentorRookiePartnerID") : -1;
+
+		::MentorRookie.Helpers.debugLog("cleared stale relationship actor=" + _actor.getName() + " actorID=" + _actor.getID() + " role=" + role + " missingPartnerID=" + partnerID + " reason=" + _reason);
+
+		this.clearRelationshipFlags(_actor);
+
+		if (role == "mentor")
+		{
+			_actor.getSkills().removeByID("effects.mentor_rookie_mentor");
+		}
+		else if (role == "rookie")
+		{
+			_actor.getSkills().removeByID("effects.mentor_rookie_rookie");
+		}
+	}
+
+	function repairStaleRelationshipFlags()
+	{
+		if (!("World" in getroottable()) || ::World.getPlayerRoster() == null) return;
+
+		local roster = ::World.getPlayerRoster().getAll();
+
+		foreach (bro in roster)
+		{
+			if (!bro.getFlags().has("MentorRookieRole")) continue;
+			if (!bro.getFlags().has("MentorRookiePartnerID"))
+			{
+				this.clearStaleRelationshipActor(bro, "missing_partner_flag");
+				continue;
+			}
+
+			local role = bro.getFlags().get("MentorRookieRole");
+			local partner = ::MentorRookie.Helpers.getActorByID(bro.getFlags().get("MentorRookiePartnerID"));
+
+			if (partner == null)
+			{
+				this.clearStaleRelationshipActor(bro, "partner_not_in_roster");
+				continue;
+			}
+
+			if (!partner.getFlags().has("MentorRookieRole") || !partner.getFlags().has("MentorRookiePartnerID"))
+			{
+				this.clearStaleRelationshipActor(bro, "partner_missing_relationship_flags");
+				this.clearStaleRelationshipActor(partner, "partner_missing_relationship_flags");
+				continue;
+			}
+
+			local partnerRole = partner.getFlags().get("MentorRookieRole");
+			local partnerID = partner.getFlags().get("MentorRookiePartnerID");
+
+			if (role == "mentor" && partnerRole != "rookie")
+			{
+				this.clearStaleRelationshipActor(bro, "partner_role_mismatch");
+				this.clearStaleRelationshipActor(partner, "partner_role_mismatch");
+				continue;
+			}
+
+			if (role == "rookie" && partnerRole != "mentor")
+			{
+				this.clearStaleRelationshipActor(bro, "partner_role_mismatch");
+				this.clearStaleRelationshipActor(partner, "partner_role_mismatch");
+				continue;
+			}
+
+			if (partnerID != bro.getID())
+			{
+				this.clearStaleRelationshipActor(bro, "partner_points_elsewhere");
+				this.clearStaleRelationshipActor(partner, "partner_points_elsewhere");
+				continue;
+			}
+		}
+	}
+
+	function clearRelationship( _mentor, _rookie )
+	{
+		this.clearRelationshipWithoutRebuild(_mentor, _rookie);
 		this.rebuildRelationshipsFromRoster();
 	}
 
@@ -492,6 +576,8 @@ if (!("MentorRookie" in getroottable()))
 	{
 		this.Relationships = [];
 		if (!("World" in getroottable()) || ::World.getPlayerRoster() == null) return;
+
+		this.repairStaleRelationshipFlags();
 
 		local seen = {};
 		foreach (bro in ::World.getPlayerRoster().getAll())
