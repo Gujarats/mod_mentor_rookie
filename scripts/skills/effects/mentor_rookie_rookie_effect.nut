@@ -17,21 +17,22 @@ this.mentor_rookie_rookie_effect <- this.inherit("scripts/skills/skill", {
 	function getTooltip()
 	{
 		local actor = this.getContainer().getActor();
-		local battles = actor != null && actor.getFlags().has("MentorRookieBattlesTogether") ? actor.getFlags().get("MentorRookieBattlesTogether") : 0;
+		local hasMentorRookieFlags = "MentorRookie" in getroottable() && "Flags" in ::MentorRookie;
+		local battles = actor != null && hasMentorRookieFlags && actor.getFlags().has(::MentorRookie.Flags.BattlesTogether) ? actor.getFlags().get(::MentorRookie.Flags.BattlesTogether) : 0;
 		local mentor = null;
 		local bonusPercent = 0;
 		local graduationBattles = 50;
 		local graduationLevel = 10;
 
-		if (actor != null && "MentorRookie" in getroottable() && "Service" in ::MentorRookie)
+		if (actor != null && hasMentorRookieFlags && "Service" in ::MentorRookie)
 		{
 			bonusPercent = ::MentorRookie.Service.getBonusPercentForLevel(actor.getLevel());
 			graduationBattles = ::MentorRookie.Service.getSetting("GraduationBattleCount");
 			graduationLevel = ::MentorRookie.Service.getSetting("GraduationLevel");
 
-			if (actor.getFlags().has("MentorRookiePartnerID"))
+			if (actor.getFlags().has(::MentorRookie.Flags.PartnerID))
 			{
-				mentor = ::MentorRookie.Helpers.getActorByID(actor.getFlags().get("MentorRookiePartnerID"));
+				mentor = ::MentorRookie.Helpers.getActorByID(actor.getFlags().get(::MentorRookie.Flags.PartnerID));
 			}
 		}
 
@@ -61,15 +62,15 @@ this.mentor_rookie_rookie_effect <- this.inherit("scripts/skills/skill", {
 			text = "Graduation check: [color=" + this.Const.UI.Color.PositiveValue + "]" + graduationBattles + "[/color] battles and level [color=" + this.Const.UI.Color.PositiveValue + "]" + graduationLevel + "[/color], or earlier if this rookie reaches the mentor's level"
 		});
 
-		if (actor != null && "MentorRookie" in getroottable() && "Service" in ::MentorRookie && actor.getFlags().has("MentorRookieFocusAttributeID"))
+		if (actor != null && hasMentorRookieFlags && "Service" in ::MentorRookie && actor.getFlags().has(::MentorRookie.Flags.FocusAttributeID))
 		{
-			local focusID = actor.getFlags().get("MentorRookieFocusAttributeID");
+			local focusID = actor.getFlags().get(::MentorRookie.Flags.FocusAttributeID);
 			local def = ::MentorRookie.Service.getFocusAttributeDef(focusID);
 
 			if (def != null)
 			{
-				local progress = actor.getFlags().has("MentorRookieFocusedTrainingBattles") ? actor.getFlags().get("MentorRookieFocusedTrainingBattles") : 0;
-				local gain = actor.getFlags().has("MentorRookieFocusedTrainingGain") ? actor.getFlags().get("MentorRookieFocusedTrainingGain") : 0;
+				local progress = actor.getFlags().has(::MentorRookie.Flags.FocusedTrainingBattles) ? actor.getFlags().get(::MentorRookie.Flags.FocusedTrainingBattles) : 0;
+				local gain = actor.getFlags().has(::MentorRookie.Flags.FocusedTrainingGain) ? actor.getFlags().get(::MentorRookie.Flags.FocusedTrainingGain) : 0;
 				local required = ::MentorRookie.Service.getSetting("MasterMentorRequiredBattles");
 				local maxGain = ::MentorRookie.Service.getSetting("MasterMentorMaxGainPerAttribute");
 

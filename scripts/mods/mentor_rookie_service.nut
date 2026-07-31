@@ -268,7 +268,7 @@ if (!("MentorRookie" in getroottable()))
 
 	function getPairHistoryPrefix( _mentorID, _rookieID )
 	{
-		return "MentorRookieHistory_" + _mentorID + "_" + _rookieID + "_";
+		return ::MentorRookie.Flags.HistoryPrefix + _mentorID + "_" + _rookieID + "_";
 	}
 
 	function readPairHistory( _mentor, _rookie )
@@ -422,42 +422,40 @@ if (!("MentorRookie" in getroottable()))
 
 	function writeRelationshipFlags( _mentor, _rookie, _battles, _focusAttributeID = null, _focusedTrainingBattles = 0, _focusedTrainingGain = 0 )
 	{
-		_mentor.getFlags().set("MentorRookieRole", "mentor");
-		_mentor.getFlags().set("MentorRookiePartnerID", _rookie.getID());
-		_mentor.getFlags().set("MentorRookieBattlesTogether", _battles);
+		_mentor.getFlags().set(::MentorRookie.Flags.Role, "mentor");
+		_mentor.getFlags().set(::MentorRookie.Flags.PartnerID, _rookie.getID());
+		_mentor.getFlags().set(::MentorRookie.Flags.BattlesTogether, _battles);
 
-		_rookie.getFlags().set("MentorRookieRole", "rookie");
-		_rookie.getFlags().set("MentorRookiePartnerID", _mentor.getID());
-		_rookie.getFlags().set("MentorRookieBattlesTogether", _battles);
+		_rookie.getFlags().set(::MentorRookie.Flags.Role, "rookie");
+		_rookie.getFlags().set(::MentorRookie.Flags.PartnerID, _mentor.getID());
+		_rookie.getFlags().set(::MentorRookie.Flags.BattlesTogether, _battles);
 
 		if (_focusAttributeID != null)
 		{
-			_mentor.getFlags().set("MentorRookieFocusAttributeID", _focusAttributeID);
-			_mentor.getFlags().set("MentorRookieFocusedTrainingBattles", _focusedTrainingBattles);
-			_mentor.getFlags().set("MentorRookieFocusedTrainingGain", _focusedTrainingGain);
-			_rookie.getFlags().set("MentorRookieFocusAttributeID", _focusAttributeID);
-			_rookie.getFlags().set("MentorRookieFocusedTrainingBattles", _focusedTrainingBattles);
-			_rookie.getFlags().set("MentorRookieFocusedTrainingGain", _focusedTrainingGain);
+			_mentor.getFlags().set(::MentorRookie.Flags.FocusAttributeID, _focusAttributeID);
+			_mentor.getFlags().set(::MentorRookie.Flags.FocusedTrainingBattles, _focusedTrainingBattles);
+			_mentor.getFlags().set(::MentorRookie.Flags.FocusedTrainingGain, _focusedTrainingGain);
+			_rookie.getFlags().set(::MentorRookie.Flags.FocusAttributeID, _focusAttributeID);
+			_rookie.getFlags().set(::MentorRookie.Flags.FocusedTrainingBattles, _focusedTrainingBattles);
+			_rookie.getFlags().set(::MentorRookie.Flags.FocusedTrainingGain, _focusedTrainingGain);
 		}
 		else
 		{
-			_mentor.getFlags().remove("MentorRookieFocusAttributeID");
-			_mentor.getFlags().remove("MentorRookieFocusedTrainingBattles");
-			_mentor.getFlags().remove("MentorRookieFocusedTrainingGain");
-			_rookie.getFlags().remove("MentorRookieFocusAttributeID");
-			_rookie.getFlags().remove("MentorRookieFocusedTrainingBattles");
-			_rookie.getFlags().remove("MentorRookieFocusedTrainingGain");
+			_mentor.getFlags().remove(::MentorRookie.Flags.FocusAttributeID);
+			_mentor.getFlags().remove(::MentorRookie.Flags.FocusedTrainingBattles);
+			_mentor.getFlags().remove(::MentorRookie.Flags.FocusedTrainingGain);
+			_rookie.getFlags().remove(::MentorRookie.Flags.FocusAttributeID);
+			_rookie.getFlags().remove(::MentorRookie.Flags.FocusedTrainingBattles);
+			_rookie.getFlags().remove(::MentorRookie.Flags.FocusedTrainingGain);
 		}
 	}
 
 	function clearRelationshipFlags( _actor )
 	{
-		_actor.getFlags().remove("MentorRookieRole");
-		_actor.getFlags().remove("MentorRookiePartnerID");
-		_actor.getFlags().remove("MentorRookieBattlesTogether");
-		_actor.getFlags().remove("MentorRookieFocusAttributeID");
-		_actor.getFlags().remove("MentorRookieFocusedTrainingBattles");
-		_actor.getFlags().remove("MentorRookieFocusedTrainingGain");
+		foreach (flag in ::MentorRookie.Flags.ActiveRelationship)
+		{
+			_actor.getFlags().remove(flag);
+		}
 	}
 
 	function clearRelationshipWithoutRebuild( _mentor, _rookie )
@@ -479,8 +477,8 @@ if (!("MentorRookie" in getroottable()))
 	{
 		if (_actor == null) return;
 
-		local role = _actor.getFlags().has("MentorRookieRole") ? _actor.getFlags().get("MentorRookieRole") : "none";
-		local partnerID = _actor.getFlags().has("MentorRookiePartnerID") ? _actor.getFlags().get("MentorRookiePartnerID") : -1;
+		local role = _actor.getFlags().has(::MentorRookie.Flags.Role) ? _actor.getFlags().get(::MentorRookie.Flags.Role) : "none";
+		local partnerID = _actor.getFlags().has(::MentorRookie.Flags.PartnerID) ? _actor.getFlags().get(::MentorRookie.Flags.PartnerID) : -1;
 
 		::MentorRookie.Helpers.debugLog("cleared stale relationship actor=" + _actor.getName() + " actorID=" + _actor.getID() + " role=" + role + " missingPartnerID=" + partnerID + " reason=" + _reason);
 
@@ -504,15 +502,15 @@ if (!("MentorRookie" in getroottable()))
 
 		foreach (bro in roster)
 		{
-			if (!bro.getFlags().has("MentorRookieRole")) continue;
-			if (!bro.getFlags().has("MentorRookiePartnerID"))
+			if (!bro.getFlags().has(::MentorRookie.Flags.Role)) continue;
+			if (!bro.getFlags().has(::MentorRookie.Flags.PartnerID))
 			{
 				this.clearStaleRelationshipActor(bro, "missing_partner_flag");
 				continue;
 			}
 
-			local role = bro.getFlags().get("MentorRookieRole");
-			local partner = ::MentorRookie.Helpers.getActorByID(bro.getFlags().get("MentorRookiePartnerID"));
+			local role = bro.getFlags().get(::MentorRookie.Flags.Role);
+			local partner = ::MentorRookie.Helpers.getActorByID(bro.getFlags().get(::MentorRookie.Flags.PartnerID));
 
 			if (partner == null)
 			{
@@ -520,15 +518,15 @@ if (!("MentorRookie" in getroottable()))
 				continue;
 			}
 
-			if (!partner.getFlags().has("MentorRookieRole") || !partner.getFlags().has("MentorRookiePartnerID"))
+			if (!partner.getFlags().has(::MentorRookie.Flags.Role) || !partner.getFlags().has(::MentorRookie.Flags.PartnerID))
 			{
 				this.clearStaleRelationshipActor(bro, "partner_missing_relationship_flags");
 				this.clearStaleRelationshipActor(partner, "partner_missing_relationship_flags");
 				continue;
 			}
 
-			local partnerRole = partner.getFlags().get("MentorRookieRole");
-			local partnerID = partner.getFlags().get("MentorRookiePartnerID");
+			local partnerRole = partner.getFlags().get(::MentorRookie.Flags.Role);
+			local partnerID = partner.getFlags().get(::MentorRookie.Flags.PartnerID);
 
 			if (role == "mentor" && partnerRole != "rookie")
 			{
@@ -582,19 +580,19 @@ if (!("MentorRookie" in getroottable()))
 		local seen = {};
 		foreach (bro in ::World.getPlayerRoster().getAll())
 		{
-			if (!bro.getFlags().has("MentorRookieRole")) continue;
-			if (bro.getFlags().get("MentorRookieRole") != "mentor") continue;
-			if (!bro.getFlags().has("MentorRookiePartnerID")) continue;
+			if (!bro.getFlags().has(::MentorRookie.Flags.Role)) continue;
+			if (bro.getFlags().get(::MentorRookie.Flags.Role) != "mentor") continue;
+			if (!bro.getFlags().has(::MentorRookie.Flags.PartnerID)) continue;
 
 			local mentor = bro;
-			local rookie = ::MentorRookie.Helpers.getActorByID(bro.getFlags().get("MentorRookiePartnerID"));
+			local rookie = ::MentorRookie.Helpers.getActorByID(bro.getFlags().get(::MentorRookie.Flags.PartnerID));
 			if (rookie == null) continue;
-			if (!rookie.getFlags().has("MentorRookieRole") || rookie.getFlags().get("MentorRookieRole") != "rookie") continue;
+			if (!rookie.getFlags().has(::MentorRookie.Flags.Role) || rookie.getFlags().get(::MentorRookie.Flags.Role) != "rookie") continue;
 
-			local battles = bro.getFlags().has("MentorRookieBattlesTogether") ? bro.getFlags().get("MentorRookieBattlesTogether") : 0;
-			local focusAttributeID = bro.getFlags().has("MentorRookieFocusAttributeID") ? bro.getFlags().get("MentorRookieFocusAttributeID") : null;
-			local focusedTrainingBattles = bro.getFlags().has("MentorRookieFocusedTrainingBattles") ? bro.getFlags().get("MentorRookieFocusedTrainingBattles") : 0;
-			local focusedTrainingGain = bro.getFlags().has("MentorRookieFocusedTrainingGain") ? bro.getFlags().get("MentorRookieFocusedTrainingGain") : 0;
+			local battles = bro.getFlags().has(::MentorRookie.Flags.BattlesTogether) ? bro.getFlags().get(::MentorRookie.Flags.BattlesTogether) : 0;
+			local focusAttributeID = bro.getFlags().has(::MentorRookie.Flags.FocusAttributeID) ? bro.getFlags().get(::MentorRookie.Flags.FocusAttributeID) : null;
+			local focusedTrainingBattles = bro.getFlags().has(::MentorRookie.Flags.FocusedTrainingBattles) ? bro.getFlags().get(::MentorRookie.Flags.FocusedTrainingBattles) : 0;
+			local focusedTrainingGain = bro.getFlags().has(::MentorRookie.Flags.FocusedTrainingGain) ? bro.getFlags().get(::MentorRookie.Flags.FocusedTrainingGain) : 0;
 			local key = "" + mentor.getID() + ":" + rookie.getID();
 			if (key in seen) continue;
 			seen[key] <- true;

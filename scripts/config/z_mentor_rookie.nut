@@ -3,6 +3,26 @@ if (!("MentorRookie" in getroottable()))
 	::MentorRookie <- {};
 }
 
+::MentorRookie.Flags <- {
+	Role = "MentorRookieRole",
+	PartnerID = "MentorRookiePartnerID",
+	BattlesTogether = "MentorRookieBattlesTogether",
+	FocusAttributeID = "MentorRookieFocusAttributeID",
+	FocusedTrainingBattles = "MentorRookieFocusedTrainingBattles",
+	FocusedTrainingGain = "MentorRookieFocusedTrainingGain",
+	HistoryPrefix = "MentorRookieHistory_",
+	ActiveRelationship = []
+};
+
+::MentorRookie.Flags.ActiveRelationship = [
+	::MentorRookie.Flags.Role,
+	::MentorRookie.Flags.PartnerID,
+	::MentorRookie.Flags.BattlesTogether,
+	::MentorRookie.Flags.FocusAttributeID,
+	::MentorRookie.Flags.FocusedTrainingBattles,
+	::MentorRookie.Flags.FocusedTrainingGain
+];
+
 ::Const.Perks.MentorRookie <- [];
 
 local function addPerk( perk )
