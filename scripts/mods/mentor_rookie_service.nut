@@ -106,6 +106,10 @@ if (!("MentorRookie" in getroottable()))
 			{
 				reason = rookie.getName() + " has no talent star in " + def.Name + ".";
 			}
+			else if (mentorStars < rookieStars)
+			{
+				reason = mentor.getName() + " has fewer talent stars than " + rookie.getName() + " in " + def.Name + ".";
+			}
 
 			ret.push({
 				ID = def.ID,
