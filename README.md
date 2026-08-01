@@ -146,7 +146,7 @@ Focused Training can use these attributes:
 - Melee Defense
 - Ranged Defense
 
-An attribute is only eligible if both the mentor and the rookie have at least one talent star in that attribute.
+An attribute is only eligible if both the mentor and the rookie have at least one talent star in that attribute, and the mentor has at least as many talent stars as the rookie.
 
 ### Locked Focus Choice
 
