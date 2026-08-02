@@ -183,6 +183,10 @@ Because relationships can graduate before reaching the cap, the `20` maximum is 
 
 Focused Training does not transfer traits, backgrounds, or talent stars. It only adds permanent attribute points to the chosen attribute.
 
+## Legends Compatibility
+
+When Legends is installed, `Master Mentor` is added to every Legends player background. The configured Master Mentor perk row is treated as a preference: Legends can place the perk in another row when that row is full so the perk remains visible and selectable.
+
 ## Debugging
 
 If debug logging is enabled, check:

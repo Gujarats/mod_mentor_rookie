@@ -5,12 +5,13 @@ if (!("MentorRookie" in getroottable()))
 
 ::MentorRookie.ID <- "mod_mentor_rookie";
 ::MentorRookie.Name <- "Mentor Rookie";
-::MentorRookie.Version <- "0.0.5";
+::MentorRookie.Version <- "0.1.0";
 
 ::MentorRookie.HookMod <- ::Hooks.register(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 ::MentorRookie.HookMod.require("mod_msu >= 1.9.0");
 
 ::include("scripts/mods/mentor_rookie_service");
+::include("scripts/mods/compatibility/legends_master_mentor_patch");
 
 ::MentorRookie.openScreen <- function()
 {
@@ -95,6 +96,7 @@ if (!("MentorRookie" in getroottable()))
 	::MentorRookie.Helpers.debugLog("settings initialized");
 
 	local mod = ::MentorRookie.HookMod;
+	::MentorRookie.Compatibility.Legends.registerHooks(mod);
 
 	::Hooks.registerJS("ui/mods/mentor_rookie.js");
 	::Hooks.registerCSS("ui/mods/mentor_rookie.css");
@@ -154,6 +156,15 @@ if (!("MentorRookie" in getroottable()))
 		q.convertEntityToUIData = @(__original) function( _entity, _activeEntity )
 		{
 			local result = __original(_entity, _activeEntity);
+			if (::Hooks.hasMod("mod_legends"))
+			{
+				if (_entity != null)
+				{
+					::MentorRookie.Helpers.debugLog("[Legends] skipped UI-only Master Mentor injection for " + _entity.getName());
+				}
+
+				return result;
+			}
 
 			if (_entity != null)
 			{

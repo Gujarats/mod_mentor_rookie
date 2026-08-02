@@ -1,3 +1,4 @@
 .brush_build_manifest.json
 dist/
 test-results
+build
