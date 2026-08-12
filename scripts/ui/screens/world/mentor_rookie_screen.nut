@@ -23,6 +23,12 @@ this.mentor_rookie_screen <- {
 
 	function create()
 	{
+		if (this.m.JSHandle != null)
+		{
+			::MentorRookie.Helpers.debugLog("screen create skipped: already connected");
+			return;
+		}
+
 		this.m.Visible = false;
 		this.m.Animating = false;
 		this.m.JSHandle = this.UI.connect("MentorRookieScreen", this);
@@ -32,7 +38,10 @@ this.mentor_rookie_screen <- {
 	function destroy()
 	{
 		this.m.OnClosePressedListener = null;
-		this.m.JSHandle = this.UI.disconnect(this.m.JSHandle);
+		if (this.m.JSHandle != null)
+		{
+			this.m.JSHandle = this.UI.disconnect(this.m.JSHandle);
+		}
 		::MentorRookie.Helpers.debugLog("screen destroyed");
 	}
 
