@@ -621,7 +621,14 @@ if (!("MentorRookie" in getroottable()))
 		local brothers = ::Tactical.Entities.getInstancesOfFaction(::Const.Faction.Player);
 		foreach (bro in brothers)
 		{
-			local combatStats = bro.getCombatStats();
+		// Combat Simulator can provide simulated actors that do not expose combat stats.
+		// Preserve normal-game XP capture, but skip those actors rather than failing combat cleanup.
+		if (!("getCombatStats" in bro))
+		{
+			continue;
+		}
+
+		local combatStats = bro.getCombatStats();
 			local xpGained = 0;
 			if (combatStats != null && "XPGained" in combatStats)
 			{
