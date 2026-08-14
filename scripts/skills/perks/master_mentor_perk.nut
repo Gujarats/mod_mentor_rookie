@@ -5,7 +5,7 @@ this.master_mentor_perk <- this.inherit("scripts/skills/skill", {
 	{
 		this.m.ID = "perk.master_mentor";
 		this.m.Name = "Master Mentor";
-		this.m.Description = "This brother has a reputation for teaching rookies. Version 0.0.1 keeps this as a perk shell only.";
+		this.m.Description = "This perk allows you to mentor a rookie player, granting them additional experience and attribute points based on your talent stars";
 		this.m.Icon = "ui/perks/mentor_rookie_perk.png";
 		this.m.IconDisabled = "ui/perks/mentor_rookie_perk_sw.png";
 		this.m.Type = this.Const.SkillType.Perk;
