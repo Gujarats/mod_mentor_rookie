@@ -36,7 +36,7 @@ this.mentor_rookie_mentor_effect <- this.inherit("scripts/skills/skill", {
 			id = 11,
 			type = "text",
 			icon = "ui/icons/special.png",
-			text = "Mentoring one rookie. Fight together to help the rookie gain bonus experience."
+			text = "Mentoring one rookie. Fight together to help the rookie gain bonus experience and push their attribute stars."
 		});
 
 		if (actor != null && hasMentorRookieFlags && "Service" in ::MentorRookie && actor.getFlags().has(::MentorRookie.Flags.FocusAttributeID))
