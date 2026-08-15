@@ -32,7 +32,7 @@ if (!("MentorRookie" in getroottable()))
 		Tooltip = "This brother is especially effective at guiding the rookie to gain bonus experience and push their attribute stars.",
 		Icon = "ui/perks/mentor_rookie_perk.png",
 		IconDisabled = "ui/perks/mentor_rookie_perk_sw.png",
-		Row = 6
+		Row = 6 // the default perk tree row, this justa temp number, the actual row is determined by the mod setting "MasterMentorPerkRow"
 	};
 }
 
