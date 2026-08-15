@@ -5,7 +5,7 @@ if (!("MentorRookie" in getroottable()))
 
 ::MentorRookie.ID <- "mod_mentor_rookie";
 ::MentorRookie.Name <- "Mentor Rookie";
-::MentorRookie.Version <- "0.1.3";
+::MentorRookie.Version <- "0.2.0";
 
 ::MentorRookie.HookMod <- ::Hooks.register(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 ::MentorRookie.HookMod.require("mod_msu >= 1.9.0");
