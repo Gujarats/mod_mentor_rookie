@@ -187,6 +187,10 @@ Focused Training does not transfer traits, backgrounds, or talent stars. It only
 
 When Legends is installed, `Master Mentor` is added to every Legends player background. The configured Master Mentor perk row is treated as a preference: Legends can place the perk in another row when that row is full so the perk remains visible and selectable.
 
+## Reforged Compatibility
+
+When Reforged is installed, `Master Mentor` is available to every Reforged brother through its universal General perk group. Existing player brothers are updated once after the world map roster has loaded, so existing saves receive the perk too. It uses the existing `Master Mentor Perk Row` setting (default `6`); restart the game after changing that setting. Reforged's normal perk-tree purchase rules still apply.
+
 ## Debugging
 
 If debug logging is enabled, check:

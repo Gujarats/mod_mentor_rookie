@@ -12,6 +12,7 @@ if (!("MentorRookie" in getroottable()))
 
 ::include("scripts/mods/mentor_rookie_service");
 ::include("scripts/mods/compatibility/legends_master_mentor_patch");
+::include("scripts/mods/compatibility/reforged_master_mentor_patch");
 
 ::MentorRookie.openScreen <- function()
 {
@@ -87,7 +88,7 @@ if (!("MentorRookie" in getroottable()))
 	);
 }
 
-::MentorRookie.HookMod.queue(">mod_msu", ">mod_druid", ">mod_aura_routing", ">mod_bandages_enhanced", ">mod_from_the_grave", ">mod_legends", ">mod_necro", function()
+::MentorRookie.HookMod.queue(">mod_msu", ">mod_druid", ">mod_aura_routing", ">mod_bandages_enhanced", ">mod_from_the_grave", ">mod_legends", ">mod_necro", ">mod_reforged", function()
 {
 	::MentorRookie.Mod <- ::MSU.Class.Mod(::MentorRookie.ID, ::MentorRookie.Version, ::MentorRookie.Name);
 	::MentorRookie.registerSettings();
@@ -146,6 +147,7 @@ if (!("MentorRookie" in getroottable()))
 
 			if ("MentorRookie" in ::getroottable() && "Service" in ::MentorRookie)
 			{
+				::MentorRookie.Compatibility.Reforged.tryMigrateExistingPlayerTrees();
 				::MentorRookie.Service.showTrainingProgressEvent();
 			}
 		}
@@ -156,11 +158,18 @@ if (!("MentorRookie" in getroottable()))
 		q.convertEntityToUIData = @(__original) function( _entity, _activeEntity )
 		{
 			local result = __original(_entity, _activeEntity);
-			if (::Hooks.hasMod("mod_legends"))
+			if (::Hooks.hasMod("mod_legends") || ::Hooks.hasMod("mod_reforged"))
 			{
 				if (_entity != null)
 				{
-					::MentorRookie.Helpers.debugLog("[Legends] skipped UI-only Master Mentor injection for " + _entity.getName());
+					if (::Hooks.hasMod("mod_reforged"))
+					{
+						::MentorRookie.Helpers.debugLog("[Reforged] skipped UI-only Master Mentor injection for " + _entity.getName());
+					}
+					else
+					{
+						::MentorRookie.Helpers.debugLog("[Legends] skipped UI-only Master Mentor injection for " + _entity.getName());
+					}
 				}
 
 				return result;
@@ -195,3 +204,11 @@ if (!("MentorRookie" in getroottable()))
 		}
 	});
 });
+
+// Seperate hook to ensure that the Reforged compatibility is registered after all other mods have been initialized
+// does not included with vanilla and legends due to mod reforged registering their perks using AfterHooks
+// This should work for new campaign and not existing saves
+::MentorRookie.HookMod.queue(">mod_reforged", function()
+{
+	::MentorRookie.Compatibility.Reforged.register();
+}, ::Hooks.QueueBucket.AfterHooks);
