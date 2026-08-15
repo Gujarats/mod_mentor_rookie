@@ -98,7 +98,6 @@ if (!("MentorRookie" in getroottable()))
 
 	local mod = ::MentorRookie.HookMod;
 	::MentorRookie.Compatibility.Legends.registerHooks(mod);
-	::MentorRookie.Compatibility.Reforged.register();
 
 	::Hooks.registerJS("ui/mods/mentor_rookie.js");
 	::Hooks.registerCSS("ui/mods/mentor_rookie.css");
@@ -148,6 +147,7 @@ if (!("MentorRookie" in getroottable()))
 
 			if ("MentorRookie" in ::getroottable() && "Service" in ::MentorRookie)
 			{
+				::MentorRookie.Compatibility.Reforged.tryMigrateExistingPlayerTrees();
 				::MentorRookie.Service.showTrainingProgressEvent();
 			}
 		}
@@ -204,3 +204,11 @@ if (!("MentorRookie" in getroottable()))
 		}
 	});
 });
+
+// Seperate hook to ensure that the Reforged compatibility is registered after all other mods have been initialized
+// does not included with vanilla and legends due to mod reforged registering their perks using AfterHooks
+// This should work for new campaign and not existing saves
+::MentorRookie.HookMod.queue(">mod_reforged", function()
+{
+	::MentorRookie.Compatibility.Reforged.register();
+}, ::Hooks.QueueBucket.AfterHooks);

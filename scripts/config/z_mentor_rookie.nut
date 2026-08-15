@@ -23,6 +23,19 @@ if (!("MentorRookie" in getroottable()))
 	::MentorRookie.Flags.FocusedTrainingGain
 ];
 
+::MentorRookie.getMasterMentorPerkDefinition <- function()
+{
+	return {
+		ID = "perk.master_mentor",
+		Script = "scripts/skills/perks/master_mentor_perk",
+		Name = "Master Mentor",
+		Tooltip = "This brother is especially effective at guiding the rookie to gain bonus experience and push their attribute stars.",
+		Icon = "ui/perks/mentor_rookie_perk.png",
+		IconDisabled = "ui/perks/mentor_rookie_perk_sw.png",
+		Row = 6
+	};
+}
+
 ::Const.Perks.MentorRookie <- [];
 
 local function addPerk( perk )
@@ -37,15 +50,7 @@ local function addPerk( perk )
 	::Const.Perks.LookupMap[perk.ID] <- perk;
 }
 
-addPerk({
-	ID = "perk.master_mentor",
-	Script = "scripts/skills/perks/master_mentor_perk",
-	Name = "Master Mentor",
-	Tooltip = "This brother is especially effective at guiding rookies. In version 0.0.1 this perk is a compatibility shell and does not change hiring balance.",
-	Icon = "ui/perks/mentor_rookie_perk.png",
-	IconDisabled = "ui/perks/mentor_rookie_perk_sw.png",
-	Row = 6
-});
+addPerk(::MentorRookie.getMasterMentorPerkDefinition());
 
 ::MentorRookie.configureDebugLogging <- function()
 {

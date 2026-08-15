@@ -189,7 +189,7 @@ When Legends is installed, `Master Mentor` is added to every Legends player back
 
 ## Reforged Compatibility
 
-When Reforged is installed, `Master Mentor` is available to every Reforged brother through its universal General perk group. It uses the existing `Master Mentor Perk Row` setting (default `6`); restart the game after changing that setting. Reforged's normal perk-tree purchase rules still apply.
+When Reforged is installed, `Master Mentor` is available to every Reforged brother through its universal General perk group. Existing player brothers are updated once after the world map roster has loaded, so existing saves receive the perk too. It uses the existing `Master Mentor Perk Row` setting (default `6`); restart the game after changing that setting. Reforged's normal perk-tree purchase rules still apply.
 
 ## Debugging
 

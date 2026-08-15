@@ -9,6 +9,8 @@ if (!("Compatibility" in ::MentorRookie))
 }
 
 ::MentorRookie.Compatibility.Reforged <- {
+	ExistingPlayersMigrated = false,
+
 	function hasRuntime()
 	{
 		return ::Hooks.hasMod("mod_reforged")
@@ -27,16 +29,9 @@ if (!("Compatibility" in ::MentorRookie))
 			return true;
 		}
 
-		::DynamicPerks.Perks.addPerks([
-			{
-				ID = "perk.master_mentor",
-				Script = "scripts/skills/perks/master_mentor_perk",
-				Name = "Master Mentor",
-				Tooltip = "This brother is especially effective at guiding rookies.",
-				Icon = "ui/perks/mentor_rookie_perk.png",
-				IconDisabled = "ui/perks/mentor_rookie_perk_sw.png"
-			}
-		]);
+		local perk = ::MentorRookie.getMasterMentorPerkDefinition();
+		delete perk.Row;
+		::DynamicPerks.Perks.addPerks([perk]);
 
 		::MentorRookie.Helpers.debugLog("[Reforged] Master Mentor perk definition registered");
 		return true;
@@ -79,6 +74,70 @@ if (!("Compatibility" in ::MentorRookie))
 
 		tree[index].push("perk.master_mentor");
 		::MentorRookie.Helpers.debugLog("[Reforged] Master Mentor inserted into universal perk group row=" + row);
+		return true;
+	}
+
+	function addMasterMentorToExistingPlayerTrees()
+	{
+		if (!this.hasRuntime()
+			|| !("World" in getroottable())
+			|| ::World.getPlayerRoster() == null)
+		{
+			::MentorRookie.Helpers.debugLog("[Reforged] existing-player Master Mentor migration skipped: player roster is unavailable");
+			return false;
+		}
+
+		local added = 0;
+		local alreadyPresent = 0;
+		local unavailable = 0;
+		foreach (actor in ::World.getPlayerRoster().getAll())
+		{
+			if (actor == null)
+			{
+				unavailable++;
+				continue;
+			}
+
+			local perkTree = actor.getPerkTree();
+			if (perkTree == null)
+			{
+				unavailable++;
+				::MentorRookie.Helpers.debugLog("[Reforged] existing-player Master Mentor migration skipped for " + actor.getName() + ": perk tree is unavailable");
+				continue;
+			}
+
+			if ("perk.master_mentor" in perkTree.getPerks())
+			{
+				alreadyPresent++;
+				continue;
+			}
+
+			perkTree.addPerk("perk.master_mentor", this.getConfiguredRow());
+			added++;
+			::MentorRookie.Helpers.debugLog("[Reforged] Master Mentor added to existing player perk tree for " + actor.getName() + " row=" + this.getConfiguredRow());
+		}
+
+		::MentorRookie.Helpers.debugLog("[Reforged] existing-player Master Mentor migration complete added=" + added + " already_present=" + alreadyPresent + " unavailable=" + unavailable);
+		return true;
+	}
+
+	function tryMigrateExistingPlayerTrees()
+	{
+		if (this.ExistingPlayersMigrated) return true;
+		if (!this.hasRuntime()
+			|| !("World" in getroottable())
+			|| ::World.getPlayerRoster() == null)
+		{
+			return false;
+		}
+
+		if (::World.getPlayerRoster().getAll().len() == 0)
+		{
+			return false;
+		}
+
+		this.addMasterMentorToExistingPlayerTrees();
+		this.ExistingPlayersMigrated = true;
 		return true;
 	}
 
