@@ -79,14 +79,6 @@ if (!("Compatibility" in ::MentorRookie))
 
 	function addMasterMentorToExistingPlayerTrees()
 	{
-		if (!this.hasRuntime()
-			|| !("World" in getroottable())
-			|| ::World.getPlayerRoster() == null)
-		{
-			::MentorRookie.Helpers.debugLog("[Reforged] existing-player Master Mentor migration skipped: player roster is unavailable");
-			return false;
-		}
-
 		local added = 0;
 		local alreadyPresent = 0;
 		local unavailable = 0;
@@ -126,13 +118,10 @@ if (!("Compatibility" in ::MentorRookie))
 		if (this.ExistingPlayersMigrated) return true;
 		if (!this.hasRuntime()
 			|| !("World" in getroottable())
-			|| ::World.getPlayerRoster() == null)
+			|| ::World.getPlayerRoster() == null
+			|| ::World.getPlayerRoster().getAll().len() == 0)
 		{
-			return false;
-		}
-
-		if (::World.getPlayerRoster().getAll().len() == 0)
-		{
+			::MentorRookie.Helpers.debugLog("[Reforged] existing-player Master Mentor migration skipped: player roster is unavailable");
 			return false;
 		}
 

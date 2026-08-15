@@ -207,7 +207,7 @@ if (!("MentorRookie" in getroottable()))
 
 // Seperate hook to ensure that the Reforged compatibility is registered after all other mods have been initialized
 // does not included with vanilla and legends due to mod reforged registering their perks using AfterHooks
-// This should work for new campaign and not existing saves
+// This should work only for new campaign and does not work for existing saves
 ::MentorRookie.HookMod.queue(">mod_reforged", function()
 {
 	::MentorRookie.Compatibility.Reforged.register();
