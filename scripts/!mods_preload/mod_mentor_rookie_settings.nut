@@ -10,7 +10,11 @@ if (!("MentorRookie" in getroottable()))
 	local graduation = ::MentorRookie.Mod.ModSettings.addPage("Graduation");
 	local perk = ::MentorRookie.Mod.ModSettings.addPage("Perk");
 
-	general.addBooleanSetting("DebugLogging", true, "Debug Logging", "Write Mentor Rookie debug lines to log.html.");
+	local debugLogging = general.addBooleanSetting("DebugLogging", false, "Debug Logging", "Write Mentor Rookie debug lines to log.html.");
+	debugLogging.addCallback(function( _data = null )
+	{
+		::MentorRookie.configureDebugLogging();
+	});
 	general.addRangeSetting("MinimumMentorLevel", 6, 2, 33, 1, "Minimum Mentor Level", "A brother must be at least this level to become a mentor.");
 	general.addRangeSetting("MaximumRookieLevel", 10, 1, 33, 1, "Maximum Rookie Level", "A brother above this level cannot become a rookie.");
 

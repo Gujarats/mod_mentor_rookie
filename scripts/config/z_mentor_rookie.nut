@@ -54,20 +54,20 @@ addPerk(::MentorRookie.getMasterMentorPerkDefinition());
 
 ::MentorRookie.configureDebugLogging <- function()
 {
-	if (::MentorRookie.Mod.ModSettings.getSetting("DebugLogging").getValue())
+	if ("GuzBluezDebugLogController" in getroottable()
+		&& "registerTarget" in ::GuzBluezDebugLogController)
 	{
-		::MentorRookie.Mod.Debug.enable();
+		::GuzBluezDebugLogController.registerTarget(::MentorRookie.ID, ::MentorRookie.Mod);
+		return;
 	}
-	else
-	{
-		::MentorRookie.Mod.Debug.disable();
-	}
+
+	::MentorRookie.Mod.Debug.setFlag("default", ::MentorRookie.Mod.ModSettings.getSetting("DebugLogging").getValue());
 }
 
 ::MentorRookie.Helpers <- {
 	function debugLog( _message )
 	{
-		if ("Mod" in ::MentorRookie && ::MentorRookie.Mod.ModSettings.getSetting("DebugLogging").getValue())
+		if ("Mod" in ::MentorRookie)
 		{
 			::MentorRookie.Mod.Debug.printLog("[MentorRookie] " + _message);
 		}
